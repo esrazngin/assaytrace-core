@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AssayTrace — Clinical NGS Revalidation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --navy:#0F172A; --navy-2:#111c33; --panel:#16223d; --panel-2:#1b2945;
+    --cyan:#06B6D4; --violet:#7C3AED; --red:#EF4444; --green:#10B981; --amber:#F59E0B;
+    --text:#E2E8F0; --muted:#94A3B8; --line:#26334f;
+    --mono:'JetBrains Mono',ui-monospace,monospace; --sans:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#16264a 0%,var(--navy) 55%);
+       color:var(--text);font-family:var(--sans);min-height:100vh}
+  a{color:var(--cyan);text-decoration:none}
+  .contact-bar{background:#0b1324;color:var(--muted);font-size:12px;text-align:center;
+       padding:6px;border-bottom:1px solid var(--line)}
+  .contact-bar b{color:var(--cyan)}
+  header.top{display:flex;align-items:center;justify-content:space-between;
+       padding:18px 28px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:34px;height:34px;border-radius:9px;
+       background:linear-gradient(135deg,var(--cyan),var(--violet));
+       box-shadow:0 0 22px rgba(6,182,212,.45)}
+  .brand h1{font-size:20px;font-weight:800;letter-spacing:.3px;margin:0}
+  .brand .url{font-size:12px;color:var(--muted)}
+  nav.tabs{display:flex;gap:6px}
+  nav.tabs button{background:transparent;border:1px solid transparent;color:var(--muted);
+       font-family:var(--sans);font-weight:600;font-size:13px;padding:9px 14px;border-radius:9px;cursor:pointer}
+  nav.tabs button.active{color:#fff;background:var(--panel);border-color:var(--line)}
+  nav.tabs button:hover{color:#fff}
+  main{max-width:1180px;margin:0 auto;padding:30px 28px 80px}
+  .view{display:none;animation:fade .35s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  h2.sec{font-size:15px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);
+       margin:30px 0 12px;font-weight:700}
+  .grid{display:grid;gap:16px}
+  .uploads{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:880px){.uploads{grid-template-columns:1fr}}
+  .drop{background:var(--panel);border:1.5px dashed var(--line);border-radius:14px;
+       padding:20px;transition:.2s;min-height:120px}
+  .drop.req{border-color:#33507e}
+  .drop.over{border-color:var(--cyan);background:var(--panel-2);box-shadow:0 0 0 3px rgba(6,182,212,.15)}
+  .drop.filled{border-style:solid;border-color:var(--green)}
+  .drop .label{font-weight:700;font-size:14px;margin-bottom:4px}
+  .drop .hint{font-size:12px;color:var(--muted)}
+  .drop .file{font-family:var(--mono);font-size:12px;color:var(--green);margin-top:10px;word-break:break-all}
+  .drop input{display:none}
+  .row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:22px}
+  button.cta{background:linear-gradient(135deg,var(--cyan),var(--violet));color:#fff;border:none;
+       font-family:var(--sans);font-weight:700;font-size:15px;padding:13px 26px;border-radius:11px;cursor:pointer;
+       box-shadow:0 8px 24px rgba(124,58,237,.32)}
+  button.cta:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+  button.ghost{background:var(--panel);color:var(--text);border:1px solid var(--line);
+       font-family:var(--sans);font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;
+       border-radius:50%;display:inline-block;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .err{color:var(--red);font-family:var(--mono);font-size:13px;margin-top:14px}
+  .decision-card{border-radius:18px;padding:28px 30px;margin-bottom:8px;
+       border:1px solid var(--line);position:relative;overflow:hidden}
+  .decision-card.safe{background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(16,185,129,.04));border-color:rgba(16,185,129,.5)}
+  .decision-card.reval{background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.04));border-color:rgba(245,158,11,.5)}
+  .decision-card .verdict{font-size:30px;font-weight:800;letter-spacing:.5px}
+  .decision-card.safe .verdict{color:var(--green)}
+  .decision-card.reval .verdict{color:var(--amber)}
+  .decision-card .sub{color:var(--muted);margin-top:6px;font-size:13px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+  @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px}
+  .stat .n{font-size:26px;font-weight:800;font-family:var(--mono)}
+  .stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-top:3px}
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;margin-top:6px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;text-transform:uppercase;font-size:10.5px;letter-spacing:.1em}
+  .pill{font-family:var(--sans);font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+  .p-analytical{background:rgba(6,182,212,.18);color:var(--cyan)}
+  .p-interpretive{background:rgba(124,58,237,.2);color:#c4b5fd}
+  .p-quality{background:rgba(16,185,129,.18);color:var(--green)}
+  .p-infrastructure{background:rgba(148,163,184,.18);color:var(--muted)}
+  .p-documentation{background:rgba(148,163,184,.18);color:var(--muted)}
+  .p-regression_detected,.p-removed{background:rgba(239,68,68,.18);color:var(--red)}
+  .p-improved{background:rgba(16,185,129,.18);color:var(--green)}
+  .p-within_tolerance{background:rgba(148,163,184,.18);color:var(--muted)}
+  .p-added{background:rgba(16,185,129,.18);color:var(--green)}
+  .p-classification_changed{background:rgba(245,158,11,.2);color:var(--amber)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:14px}
+  .muted{color:var(--muted)}
+  .empty{color:var(--muted);font-style:italic;padding:14px 2px}
+  .diff-row{display:flex;gap:12px;align-items:flex-start;font-family:var(--mono);font-size:13px;
+       padding:10px 12px;border-left:3px solid var(--line);border-radius:0 8px 8px 0;margin-bottom:6px;background:var(--panel)}
+  .diff-row.added{border-left-color:var(--green);background:rgba(16,185,129,.07)}
+  .diff-row.removed{border-left-color:var(--red);background:rgba(239,68,68,.07)}
+  .diff-row.classification_changed{border-left-color:var(--amber);background:rgba(245,158,11,.07)}
+  .diff-row .sign{font-weight:700;width:14px}
+  .diff-row.added .sign{color:var(--green)} .diff-row.removed .sign{color:var(--red)}
+  .diff-row.classification_changed .sign{color:var(--amber)}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 16px}
+  .filters input,.filters select{background:var(--panel);color:var(--text);border:1px solid var(--line);
+       border-radius:9px;padding:9px 11px;font-family:var(--sans);font-size:13px}
+  .chart-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="contact-bar">Contact: <b>esra.zengiinn@gmail.com</b></div>
+<header class="top">
+  <div class="brand">
+    <div class="logo"></div>
+    <div><h1>AssayTrace</h1><div class="url">www.assaytrace.com</div></div>
+  </div>
+  <nav class="tabs">
+    <button data-view="dashboard" class="active">Dashboard</button>
+    <button data-view="audit">Audit &amp; Decision</button>
+    <button data-view="regression">Regression</button>
+    <button data-view="variants">Variant Delta</button>
+  </nav>
+</header>
+
+<main>
+  <!-- DASHBOARD -->
+  <section class="view active" id="dashboard">
+    <h2 class="sec">Inputs</h2>
+    <div class="grid uploads" id="dropzones"></div>
+    <div class="row">
+      <button class="cta" id="runBtn" disabled>Run Revalidation</button>
+      <span class="muted" id="hintText">Upload the old and new manifests to begin.</span>
+    </div>
+    <div class="err" id="errBox" style="display:none"></div>
+  </section>
+
+  <!-- AUDIT & DECISION -->
+  <section class="view" id="audit">
+    <div id="decisionCard" class="empty">Run an analysis from the Dashboard to see the decision.</div>
+    <div class="stats" id="statRow" style="display:none"></div>
+    <div id="auditBody"></div>
+  </section>
+
+  <!-- REGRESSION -->
+  <section class="view" id="regression">
+    <h2 class="sec">Baseline vs Current</h2>
+    <div id="regBody" class="empty">No regression data. Provide baseline + current benchmark JSON.</div>
+  </section>
+
+  <!-- VARIANT DELTA -->
+  <section class="view" id="variants">
+    <h2 class="sec">Reportable Variant Delta</h2>
+    <div class="filters" id="variantFilters" style="display:none">
+      <input id="vSearch" placeholder="Search gene or variant…">
+      <select id="vGene"><option value="">All genes</option></select>
+      <select id="vClass"><option value="">All classifications</option></select>
+      <select id="vType">
+        <option value="">All changes</option>
+        <option value="added">Added</option>
+        <option value="removed">Removed</option>
+        <option value="classification_changed">Classification changed</option>
+      </select>
+    </div>
+    <div id="variantBody" class="empty">No variant comparison. Provide old + new reportable variants JSON.</div>
+  </section>
+</main>
+
+<script>
+const DROPS = [
+  {key:"old_manifest", label:"Old Manifest", hint:"Baseline manifest (JSON)", req:true},
+  {key:"new_manifest", label:"New Manifest", hint:"Candidate manifest (JSON)", req:true},
+  {key:"baseline_benchmark", label:"Baseline Benchmark", hint:"GIAB benchmark JSON (optional)"},
+  {key:"current_benchmark", label:"Current Benchmark", hint:"GIAB benchmark JSON (optional)"},
+  {key:"old_variants", label:"Old Reportable Variants", hint:"Variants JSON (optional)"},
+  {key:"new_variants", label:"New Reportable Variants", hint:"Variants JSON (optional)"},
+];
+const files = {};
+let lastBinder = null;
+let lastDeltas = [];
+
+const zonesEl = document.getElementById("dropzones");
+DROPS.forEach(d=>{
+  const z = document.createElement("label");
+  z.className = "drop" + (d.req ? " req":"");
+  z.innerHTML = `<div class="label">${d.label}${d.req?' *':''}</div>
+                 <div class="hint">${d.hint}</div>
+                 <div class="file"></div>
+                 <input type="file" accept=".json,application/json">`;
+  const input = z.querySelector("input");
+  const fileEl = z.querySelector(".file");
+  const set = f => { if(!f) return; files[d.key]=f; fileEl.textContent="✓ "+f.name; z.classList.add("filled"); refresh(); };
+  input.addEventListener("change", e=>set(e.target.files[0]));
+  z.addEventListener("dragover", e=>{e.preventDefault();z.classList.add("over");});
+  z.addEventListener("dragleave", ()=>z.classList.remove("over"));
+  z.addEventListener("drop", e=>{e.preventDefault();z.classList.remove("over");set(e.dataTransfer.files[0]);});
+  zonesEl.appendChild(z);
+});
+
+function refresh(){
+  const ready = files.old_manifest && files.new_manifest;
+  document.getElementById("runBtn").disabled = !ready;
+  document.getElementById("hintText").textContent = ready
+    ? "Ready. Click Run Revalidation." : "Upload the old and new manifests to begin.";
+}
+
+document.querySelectorAll("nav.tabs button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("nav.tabs button").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.getElementById(b.dataset.view).classList.add("active");
+  };
+});
+function goTab(name){ document.querySelector(`nav.tabs button[data-view="${name}"]`).click(); }
+
+document.getElementById("runBtn").onclick = async ()=>{
+  const btn=document.getElementById("runBtn"), err=document.getElementById("errBox");
+  err.style.display="none";
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Analyzing…';
+  const fd=new FormData();
+  Object.entries(files).forEach(([k,f])=>fd.append(k,f));
+  try{
+    const r=await fetch("/api/analyze",{method:"POST",body:fd});
+    const data=await r.json();
+    if(!r.ok) throw new Error(data.error||"Analysis failed");
+    lastBinder=data.binder; lastDeltas=data.binder.variant_classification_deltas||[];
+    renderAudit(data); renderRegression(data.binder); renderVariants(lastDeltas);
+    goTab("audit");
+  }catch(e){ err.textContent=e.message; err.style.display="block"; }
+  finally{ btn.disabled=false; btn.textContent="Run Revalidation"; refresh(); }
+};
+
+const pill=(cls,txt)=>`<span class="pill p-${cls}">${txt}</span>`;
+const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+function renderAudit(data){
+  const safe = data.decision==="SAFE_TO_DEPLOY";
+  const card=document.getElementById("decisionCard");
+  card.className="decision-card "+(safe?"safe":"reval");
+  card.innerHTML=`<div class="verdict">${safe?"SAFE TO DEPLOY":"REVALIDATION REQUIRED"}</div>
+    <div class="sub">${data.summary.changes} change(s) · ${data.summary.decisions} decision(s) ·
+    ${data.summary.regressions} regression(s) · ${data.summary.variant_changes} variant change(s)</div>
+    <div class="row"><button class="ghost" id="pdfBtn">⬇ Export PDF</button></div>`;
+  document.getElementById("pdfBtn").onclick=exportPdf;
+
+  const s=data.summary, sr=document.getElementById("statRow");
+  sr.style.display="grid";
+  sr.innerHTML=[["changes",s.changes],["impacts",s.impacts],["decisions",s.decisions],
+    ["affected claims",s.affected_claims.length]]
+    .map(([k,n])=>`<div class="stat"><div class="n">${n}</div><div class="k">${k}</div></div>`).join("");
+
+  const b=data.binder;
+  const changeRows=b.changes.map(c=>`<tr><td>${esc(c.change_type)}</td><td>${esc(c.component_identity)}</td>
+    <td>${esc(c.old_value)}</td><td>${esc(c.new_value)}</td></tr>`).join("");
+  const impactRows=b.impacts.map(i=>`<tr><td>${esc(i.change_id)}</td><td>${pill(i.impact_domain,i.impact_domain)}</td>
+    <td>${esc(i.rationale)}</td></tr>`).join("");
+  const decRows=b.decisions.map(d=>`<tr><td>${esc(d.decision_type)}</td>
+    <td>${esc((d.affected_claims||[]).join(", ")||"—")}</td><td>${esc(d.rationale)}</td></tr>`).join("");
+
+  document.getElementById("auditBody").innerHTML=`
+    <h2 class="sec">Change Summary</h2>
+    <div class="panel">${b.changes.length?`<table><tr><th>Type</th><th>Identity</th><th>Old</th><th>New</th></tr>${changeRows}</table>`:'<div class="empty">No changes detected.</div>'}</div>
+    <h2 class="sec">Impact Summary</h2>
+    <div class="panel">${b.impacts.length?`<table><tr><th>Change</th><th>Domain</th><th>Rationale</th></tr>${impactRows}</table>`:'<div class="empty">No impacts.</div>'}</div>
+    <h2 class="sec">Decision Rationale</h2>
+    <div class="panel">${b.decisions.length?`<table><tr><th>Decision</th><th>Affected Claims</th><th>Rationale</th></tr>${decRows}</table>`:'<div class="empty">No revalidation decisions.</div>'}</div>`;
+}
+
+let regChart=null;
+function renderRegression(b){
+  const body=document.getElementById("regBody");
+  if(!b.regression || !b.regression.length){
+    body.className="empty"; body.textContent="No regression data. Provide baseline + current benchmark JSON.";
+    return;
+  }
+  body.className="";
+  body.innerHTML=`<div class="chart-wrap"><canvas id="regChart" height="120"></canvas></div>
+    <div class="panel"><table id="regTable"><tr><th>Metric</th><th>Baseline</th><th>Current</th><th>Δ</th><th>Status</th><th>Rationale</th></tr>
+    ${b.regression.map(m=>`<tr><td>${esc(m.metric)}</td><td>${m.old_value.toFixed(4)}</td>
+      <td>${m.new_value.toFixed(4)}</td><td>${(m.delta>=0?'+':'')+m.delta.toFixed(4)}</td>
+      <td>${pill(m.status,m.status.replace(/_/g,' '))}</td><td>${esc(m.rationale)}</td></tr>`).join("")}</table></div>`;
+  const labels=b.regression.map(m=>m.metric);
+  const ctx=document.getElementById("regChart");
+  if(regChart) regChart.destroy();
+  regChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[
+    {label:'Baseline',data:b.regression.map(m=>m.old_value),backgroundColor:'#334a72'},
+    {label:'Current',data:b.regression.map(m=>m.new_value),
+      backgroundColor:b.regression.map(m=>m.status==='regression_detected'?'#EF4444':(m.status==='improved'?'#10B981':'#06B6D4'))}
+  ]},options:{responsive:true,scales:{y:{min:0,max:1,grid:{color:'#26334f'},ticks:{color:'#94A3B8'}},
+    x:{grid:{display:false},ticks:{color:'#94A3B8'}}},plugins:{legend:{labels:{color:'#E2E8F0'}}}}});
+}
+
+function renderVariants(deltas){
+  const body=document.getElementById("variantBody"), filt=document.getElementById("variantFilters");
+  if(!deltas || !deltas.length){
+    body.className="empty"; body.textContent="No variant comparison. Provide old + new reportable variants JSON.";
+    filt.style.display="none"; return;
+  }
+  filt.style.display="flex"; body.className="";
+  const genes=[...new Set(deltas.map(d=>d.gene))].sort();
+  const classes=[...new Set(deltas.flatMap(d=>[d.old_classification,d.new_classification]).filter(Boolean))];
+  const gSel=document.getElementById("vGene"), cSel=document.getElementById("vClass");
+  gSel.innerHTML='<option value="">All genes</option>'+genes.map(g=>`<option>${esc(g)}</option>`).join("");
+  cSel.innerHTML='<option value="">All classifications</option>'+classes.map(c=>`<option>${esc(c)}</option>`).join("");
+  const draw=()=>{
+    const q=document.getElementById("vSearch").value.toLowerCase();
+    const g=gSel.value, c=cSel.value, t=document.getElementById("vType").value;
+    const rows=deltas.filter(d=>
+      (!q || (d.gene+" "+d.variant).toLowerCase().includes(q)) &&
+      (!g || d.gene===g) && (!t || d.change_type===t) &&
+      (!c || d.old_classification===c || d.new_classification===c));
+    body.innerHTML = rows.length ? rows.map(d=>{
+      const sign=d.change_type==="added"?"+":d.change_type==="removed"?"−":"~";
+      return `<div class="diff-row ${d.change_type}"><div class="sign">${sign}</div>
+        <div><b>${esc(d.gene)}</b> ${esc(d.variant)} ${pill(d.change_type,d.change_type.replace(/_/g,' '))}
+        <div class="muted" style="margin-top:4px">${esc(d.explanation)}</div></div></div>`;
+    }).join("") : '<div class="empty">No variants match the filters.</div>';
+  };
+  document.getElementById("vSearch").oninput=draw;
+  [gSel,cSel,document.getElementById("vType")].forEach(el=>el.onchange=draw);
+  draw();
+}
+
+async function exportPdf(){
+  if(!lastBinder) return;
+  const r=await fetch("/api/export-pdf",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(lastBinder)});
+  if(!r.ok){alert("PDF export failed");return;}
+  const blob=await r.blob(), url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download="assaytrace_binder.pdf"; a.click(); URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>

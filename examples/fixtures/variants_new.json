@@ -1,0 +1,5 @@
+[
+  {"gene": "BRCA1", "variant": "c.68_69delAG", "classification": "Pathogenic", "transcript": "NM_007294.4"},
+  {"gene": "KRAS",  "variant": "c.35G>A",      "classification": "Likely pathogenic"},
+  {"gene": "EGFR",  "variant": "c.2369C>T",    "classification": "Likely pathogenic"}
+]
