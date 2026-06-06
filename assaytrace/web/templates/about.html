@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — AssayTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+{% include 'partials/site_styles.html' %}
+</head>
+<body>
+{% include 'partials/site_header.html' %}
+
+<main>
+  <div class="hero">
+    <div class="eyebrow">Clinical NGS · Change Control</div>
+    <h2>About AssayTrace</h2>
+    <p><strong style="color:var(--text)">Change-Control Intelligence for Clinical Genomics</strong></p>
+    <p style="margin-top:14px">Automated impact analysis, revalidation decisions, benchmark evidence integration, and audit-ready reporting for regulated NGS workflows.</p>
+  </div>
+
+  <h2 class="sec">The Problem</h2>
+  <div class="panel">
+    <p>Clinical NGS pipelines continuously evolve. Reference genomes change. Annotation databases change. Variant callers change. QC policies evolve.</p>
+    <p>Each update can affect validated performance claims, interpretive workflows, and the evidence laboratories must defend during inspections. Determining the appropriate scope of revalidation is often manual, inconsistent, time-consuming, and difficult to document in an audit-ready manner.</p>
+  </div>
+
+  <h2 class="sec">The Solution</h2>
+  <div class="panel">
+    <p>AssayTrace brings structure and traceability to NGS change control. The platform:</p>
+    <ul>
+      <li>Detects pipeline changes between baseline and candidate assay manifests</li>
+      <li>Performs impact analysis across analytical, interpretive, quality, and infrastructure domains</li>
+      <li>Maps affected assay claims to each detected change</li>
+      <li>Recommends revalidation actions with explicit, auditable rationale</li>
+      <li>Generates audit-ready documentation, including benchmark regression and variant delta evidence</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">Core Capabilities</h2>
+  <div class="caps">
+    <div class="cap-card">
+      <h3>Change Detection</h3>
+      <p>Structured comparison of versioned pipeline components, QC thresholds, reference resources, and environment metadata between two assay manifests.</p>
+    </div>
+    <div class="cap-card">
+      <h3>Impact Analysis</h3>
+      <p>Classifies each change into impact domains — analytical, interpretive, quality, infrastructure, or documentation — to guide validation scope.</p>
+    </div>
+    <div class="cap-card">
+      <h3>Assay Claim Mapping</h3>
+      <p>Links detected changes to the validated assay claims they may affect, using explicit claim dependency declarations in the manifest.</p>
+    </div>
+    <div class="cap-card">
+      <h3>Benchmark Regression Detection</h3>
+      <p>Compares baseline and current benchmark evidence to flag performance regressions that may require analytical follow-up.</p>
+    </div>
+    <div class="cap-card">
+      <h3>Variant Delta Tracking</h3>
+      <p>Surfaces additions, removals, and classification changes in reportable variant sets between pipeline versions.</p>
+    </div>
+    <div class="cap-card">
+      <h3>Audit Binder Generation</h3>
+      <p>Assembles change summaries, impact rationale, revalidation decisions, regression metrics, and variant deltas into a single audit-ready record with PDF export.</p>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    <p>Built at the intersection of bioinformatics, software engineering, and regulatory science.</p>
+    <p>Contact: <a href="mailto:esra.zengiinn@gmail.com">esra.zengiinn@gmail.com</a></p>
+  </footer>
+</main>
+</body>
+</html>

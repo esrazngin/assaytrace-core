@@ -42,6 +42,61 @@ python -m examples.demo    # end-to-end walkthrough
 pytest -q                  # 24 tests
 ```
 
+## Web UI
+
+```bash
+pip install flask fpdf2
+python -m assaytrace.web.app
+```
+
+Open `http://127.0.0.1:8000` for the dashboard. Use **Try Demo** for an instant analysis with bundled fixtures, or upload manifests via **Run Revalidation**.
+
+## Deploying to Render
+
+AssayTrace ships with a [Render Blueprint](render.yaml) for one-click deployment.
+
+### Build command
+
+```bash
+pip install -r requirements.txt
+```
+
+### Start command
+
+```bash
+gunicorn --bind 0.0.0.0:$PORT assaytrace.web.app:app
+```
+
+For local development you can also run:
+
+```bash
+python -m assaytrace.web.app
+```
+
+Render sets the `PORT` environment variable automatically; the built-in dev server reads it when present.
+
+### Environment setup
+
+| Variable | Value | Notes |
+|----------|-------|-------|
+| `PYTHON_VERSION` | `3.12.0` | Set in `render.yaml` |
+| `PORT` | *(auto)* | Injected by Render at runtime |
+
+No database, API keys, or persistent storage are required. The application is stateless: uploads are processed in memory and results are returned to the client.
+
+### Expected URL structure
+
+| Path | Description |
+|------|-------------|
+| `/` | Dashboard — upload manifests, run analysis, or try demo |
+| `/about` | Product overview and capabilities |
+| `/docs` | Platform documentation |
+| `POST /api/analyze` | Run change-control analysis (multipart form upload) |
+| `POST /demo` | Run demo analysis with bundled fixtures |
+| `POST /api/export-pdf` | Export an Audit Binder as PDF |
+
+After deployment, Render provides a URL such as `https://assaytrace.onrender.com`.
+
 ## Layout
 
 ```

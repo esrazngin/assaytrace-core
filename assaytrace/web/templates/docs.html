@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation — AssayTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+{% include 'partials/site_styles.html' %}
+</head>
+<body>
+{% include 'partials/site_header.html' %}
+
+<main>
+  <div class="hero">
+    <div class="eyebrow">Platform Guide</div>
+    <h2>AssayTrace Documentation</h2>
+    <p>How to run a change-control analysis, interpret revalidation decisions, and produce audit-ready outputs from your assay manifests and supporting evidence.</p>
+  </div>
+
+  <h2 class="sec">Inputs</h2>
+  <div class="input-grid">
+    <div class="input-card">
+      <h3>Baseline Manifest</h3>
+      <p>The validated, currently deployed assay manifest (JSON). Serves as the reference configuration for change detection.</p>
+    </div>
+    <div class="input-card">
+      <h3>Candidate Manifest</h3>
+      <p>The proposed updated assay manifest (JSON). AssayTrace diffs this against the baseline to identify every versioned change.</p>
+    </div>
+    <div class="input-card">
+      <h3>Benchmark Evidence</h3>
+      <p>Optional baseline and current benchmark JSON packages (e.g. GIAB-derived metrics). Used for performance regression detection alongside manifest changes.</p>
+    </div>
+    <div class="input-card">
+      <h3>Reportable Variants</h3>
+      <p>Optional old and new reportable variant JSON lists. Enables classification concordance and variant delta reporting between pipeline versions.</p>
+    </div>
+  </div>
+
+  <h2 class="sec">Workflow</h2>
+  <div class="workflow">
+    <div class="wf-step"><div class="num">1</div><div><h3>Manifest Comparison</h3><p>Load and validate the baseline and candidate manifests.</p></div></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-step"><div class="num">2</div><div><h3>Change Detection</h3><p>Identify version, threshold, resource, and environment differences.</p></div></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-step"><div class="num">3</div><div><h3>Impact Analysis</h3><p>Classify each change by impact domain to scope validation effort.</p></div></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-step"><div class="num">4</div><div><h3>Claim Mapping</h3><p>Determine which validated assay claims are affected by each change.</p></div></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-step"><div class="num">5</div><div><h3>Revalidation Decisions</h3><p>Generate per-change revalidation recommendations with auditable rationale.</p></div></div>
+    <div class="wf-arrow">↓</div>
+    <div class="wf-step"><div class="num">6</div><div><h3>Audit Binder Generation</h3><p>Assemble the full change-control record, including optional regression and variant evidence.</p></div></div>
+  </div>
+
+  <h2 class="sec">Decision Types</h2>
+  <div class="caps">
+    <div class="cap-card">
+      <span class="pill">classification_concordance_review</span>
+      <h3>Classification Concordance Review</h3>
+      <p>Recommended when interpretive resources change (e.g. annotation or transcript updates) and clinical classification consistency must be verified across reportable variants.</p>
+    </div>
+    <div class="cap-card">
+      <span class="pill">targeted_analytical_revalidation</span>
+      <h3>Targeted Analytical Revalidation</h3>
+      <p>Recommended when analytical components change in ways that may affect validated detection performance. Scope is limited to the impacted claims and variant types.</p>
+    </div>
+    <div class="cap-card">
+      <span class="pill">infrastructure_verification</span>
+      <h3>Infrastructure Verification</h3>
+      <p>Recommended when container images, workflow engines, or deployment environment metadata change. Confirms the runtime environment remains controlled and traceable.</p>
+    </div>
+    <div class="cap-card">
+      <span class="pill">qc_verification</span>
+      <h3>QC Verification</h3>
+      <p>Recommended when QC thresholds or QC-related policies change. Verifies that quality decision boundaries remain appropriate and documented.</p>
+    </div>
+  </div>
+
+  <h2 class="sec">Outputs</h2>
+  <div class="panel">
+    <ul>
+      <li><strong style="color:var(--text)">Change Summary</strong> — tabular record of every detected manifest difference with old and new values.</li>
+      <li><strong style="color:var(--text)">Impact Summary</strong> — impact domain and rationale for each change.</li>
+      <li><strong style="color:var(--text)">Decision Rationale</strong> — revalidation type, affected claims, and explanation for each decision.</li>
+      <li><strong style="color:var(--text)">Regression Analysis</strong> — baseline vs. current benchmark metrics with regression status when benchmark evidence is provided.</li>
+      <li><strong style="color:var(--text)">Variant Delta Report</strong> — added, removed, and classification-changed reportable variants when variant JSON is provided.</li>
+      <li><strong style="color:var(--text)">Audit Binder PDF</strong> — downloadable, audit-ready PDF assembled from the full analysis record.</li>
+    </ul>
+  </div>
+
+  <h2 class="sec">FAQ</h2>
+  <div class="faq">
+    <details>
+      <summary>What is a manifest?</summary>
+      <p>An AssayTrace manifest is the canonical identity card of a clinical NGS assay pipeline. It captures versioned analysis components, reference resources, QC thresholds, validated assay claims, and environment metadata in a single structured, hashable document.</p>
+    </details>
+    <details>
+      <summary>Why is benchmark evidence useful?</summary>
+      <p>Manifest changes describe <em>what</em> changed; benchmark evidence shows <em>whether performance changed</em>. Comparing baseline and current benchmark packages helps detect analytical regressions that may require follow-up even when the manifest diff alone does not capture runtime behavior.</p>
+    </details>
+    <details>
+      <summary>When is revalidation required?</summary>
+      <p>Revalidation is recommended when a change affects validated assay claims in an analytical, interpretive, quality, or infrastructure domain. AssayTrace maps each change to a specific revalidation type. Changes that require only documentation updates or no action are also reported explicitly.</p>
+    </details>
+    <details>
+      <summary>What is an Audit Binder?</summary>
+      <p>The Audit Binder is the complete change-control record produced by AssayTrace: detected changes, impact classifications, claim mappings, revalidation decisions, benchmark regression results, variant deltas, and sign-off metadata — suitable for quality review and PDF export.</p>
+    </details>
+  </div>
+</main>
+</body>
+</html>

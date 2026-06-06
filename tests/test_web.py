@@ -35,6 +35,7 @@ def test_index_branding(client):
     assert b"AssayTrace" in resp.data
     assert b"esra.zengiinn@gmail.com" in resp.data
     assert b"www.assaytrace.com" in resp.data
+    assert b"Try Demo" in resp.data
 
 
 def test_analyze_returns_decision_and_binder(client):
@@ -59,6 +60,23 @@ def test_analyze_returns_decision_and_binder(client):
 def test_analyze_requires_manifests(client):
     resp = client.post("/api/analyze", data={}, content_type="multipart/form-data")
     assert resp.status_code == 400
+
+
+def test_demo_runs_real_engine(client):
+    resp = client.post("/demo")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["decision"] == "REVALIDATION_REQUIRED"
+    assert body["summary"]["changes"] >= 1
+    assert body["summary"]["decisions"] >= 1
+    assert body["summary"]["regressions"] >= 1
+    assert body["summary"]["variant_changes"] >= 1
+    binder = body["binder"]
+    assert binder["changes"]
+    assert binder["impacts"]
+    assert binder["decisions"]
+    assert binder["regression"]
+    assert binder["variant_classification_deltas"]
 
 
 def test_export_pdf_roundtrip(client):

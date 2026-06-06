@@ -1,0 +1,5 @@
+# Deployment dependencies for the AssayTrace web UI (Render, etc.)
+-e .
+flask>=3.0,<4
+fpdf2>=2.7,<3
+gunicorn>=22.0,<24
