@@ -19,7 +19,10 @@ from ..diff.models import ChangeRecord
 from ..evidence.benchmark import BenchmarkPackage
 from ..evidence.models import GiabEvidencePackage
 from ..impact.models import ImpactRecord
+from ..approval.models import DeviationApproval
 from ..regression.models import MetricComparison
+from ..regression.gate import RegressionGate
+from ..severity.models import ChangeSeverity
 from ..reportable.classification import VariantClassificationDelta
 from ..reportable.models import ReportableVariantDelta
 
@@ -69,12 +72,19 @@ class AuditBinder(BaseModel):
     claim_impacts: tuple[ClaimImpactRecord, ...] = Field(default=())
     decisions: tuple[DecisionRecord, ...] = Field(default=())
     no_revalidation_records: tuple[NoRevalidationRecord, ...] = Field(default=())
+    change_severities: tuple[ChangeSeverity, ...] = Field(default=())
+    approvals: tuple[DeviationApproval, ...] = Field(default=())
+    orphan_approvals: tuple[str, ...] = Field(default=())
+    policy_name: str | None = None
+    policy_version: str | None = None
+    policy_hash: str | None = None
 
     baseline_benchmark: GiabEvidencePackage | None = None
     current_benchmark: GiabEvidencePackage | None = None
     baseline_benchmark_pkg: BenchmarkPackage | None = None
     current_benchmark_pkg: BenchmarkPackage | None = None
     regression: tuple[MetricComparison, ...] = Field(default=())
+    regression_gate: RegressionGate | None = None
     reportable_deltas: tuple[ReportableVariantDelta, ...] = Field(default=())
     variant_classification_deltas: tuple[VariantClassificationDelta, ...] = Field(default=())
 
