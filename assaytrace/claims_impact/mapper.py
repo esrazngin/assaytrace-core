@@ -9,7 +9,7 @@ table for non-component changes. No scoring, no probability, no decisions.
 from __future__ import annotations
 
 from ..claims_impact.models import ClaimImpactRecord
-from ..diff.models import ChangeRecord
+from ..diff.models import ChangeRecord, ChangeType
 from ..impact.models import ImpactDomain, ImpactRecord
 from ..models.claims import AssayClaim
 from ..models.manifest import AssayManifest
@@ -58,6 +58,17 @@ class ClaimImpactMapper:
         return unique
 
     @staticmethod
+    def _qc_metric(change: ChangeRecord) -> str:
+        """Extract the QC parameter name (e.g. 'minimum_vaf') from a QC change."""
+        for value in (change.new_value, change.old_value):
+            if isinstance(value, dict) and value.get("metric"):
+                return str(value["metric"])
+        ident = change.component_identity or ""
+        if ":" in ident:
+            return ident.split(":", 1)[1].split("[", 1)[0]
+        return ""
+
+    @staticmethod
     def _match(
         change: ChangeRecord, claim: AssayClaim, domain: ImpactDomain
     ) -> str | None:
@@ -75,6 +86,25 @@ class ClaimImpactMapper:
                     f"('{change.category.value}')"
                 )
             return None
+
+        # QC threshold change: deterministic QC-parameter -> performance
+        # characteristic -> claim-type mapping (Critical Issue #1). A change to a
+        # known QC parameter perturbs the analytical claims tied to the
+        # performance characteristic it governs.
+        if change.change_type in {
+            ChangeType.QC_THRESHOLD_CHANGED,
+            ChangeType.QC_THRESHOLD_ADDED,
+            ChangeType.QC_THRESHOLD_REMOVED,
+        }:
+            metric = ClaimImpactMapper._qc_metric(change)
+            if claim.claim_type in rules.qc_claim_types_for_parameter(metric):
+                characteristic = rules.qc_characteristic_for_parameter(metric)
+                return (
+                    f"matched via QC-parameter rule "
+                    f"('{metric}' -> {characteristic} -> claim_type "
+                    f"'{claim.claim_type.value}')"
+                )
+            # Fall through to the domain bridge for QC_DECISION_STABILITY claims.
 
         # Non-component change: externalized domain -> claim_type bridge.
         if claim.claim_type in rules.claim_types_for_domain(domain):

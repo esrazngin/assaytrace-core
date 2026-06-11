@@ -29,3 +29,66 @@ DOMAIN_CLAIM_TYPES: dict[ImpactDomain, frozenset[ClaimType]] = {
 
 def claim_types_for_domain(domain: ImpactDomain) -> frozenset[ClaimType]:
     return DOMAIN_CLAIM_TYPES.get(domain, frozenset())
+
+
+# ---------------------------------------------------------------------------
+# QC threshold -> performance characteristic -> claim types (Critical Issue #1)
+#
+# A QC threshold change (e.g. minimum_vaf 0.05 -> 0.03) materially affects assay
+# performance and therefore the analytical claims that depend on that
+# performance. Because a QC change carries no component identity, the Step-1
+# dependency wiring cannot reach it; this externalized, extensible table makes
+# the connection explicit and deterministic:
+#
+#     QC parameter  ->  performance characteristic  ->  affected claim types
+#
+# Edit the tables (data, not logic) to add parameters or re-map characteristics.
+# Conservative by design: an unknown QC parameter maps to nothing rather than
+# guessing.
+# ---------------------------------------------------------------------------
+
+# Performance characteristic each QC parameter governs.
+QC_PARAMETER_CHARACTERISTIC: dict[str, str] = {
+    "minimum_vaf": "sensitivity / limit of detection",
+    "minimum_coverage": "analytical sensitivity (depth-dependent detection)",
+    "minimum_depth": "analytical sensitivity (depth-dependent detection)",
+    "minimum_alt_reads": "sensitivity / limit of detection",
+    "minimum_mapping_quality": "alignment confidence / analytical specificity",
+    "minimum_base_quality": "base accuracy / analytical specificity",
+    "maximum_contamination": "specificity / false-positive control",
+    "minimum_tumor_purity": "sensitivity / limit of detection",
+}
+
+# Performance characteristic -> claim types it can perturb.
+CHARACTERISTIC_CLAIM_TYPES: dict[str, frozenset[ClaimType]] = {
+    "sensitivity / limit of detection": frozenset({
+        ClaimType.SNV_DETECTION, ClaimType.INDEL_DETECTION,
+        ClaimType.LIMIT_OF_DETECTION,
+    }),
+    "analytical sensitivity (depth-dependent detection)": frozenset({
+        ClaimType.SNV_DETECTION, ClaimType.INDEL_DETECTION,
+        ClaimType.CNV_DETECTION, ClaimType.LIMIT_OF_DETECTION,
+    }),
+    "alignment confidence / analytical specificity": frozenset({
+        ClaimType.SNV_DETECTION, ClaimType.INDEL_DETECTION,
+    }),
+    "base accuracy / analytical specificity": frozenset({
+        ClaimType.SNV_DETECTION, ClaimType.INDEL_DETECTION,
+    }),
+    "specificity / false-positive control": frozenset({
+        ClaimType.SNV_DETECTION, ClaimType.INDEL_DETECTION,
+    }),
+}
+
+
+def qc_characteristic_for_parameter(metric: str) -> str | None:
+    """Return the performance characteristic a QC parameter governs, or None."""
+    return QC_PARAMETER_CHARACTERISTIC.get(metric)
+
+
+def qc_claim_types_for_parameter(metric: str) -> frozenset[ClaimType]:
+    """Claim types a QC parameter can perturb (empty for unknown parameters)."""
+    characteristic = QC_PARAMETER_CHARACTERISTIC.get(metric)
+    if characteristic is None:
+        return frozenset()
+    return CHARACTERISTIC_CLAIM_TYPES.get(characteristic, frozenset())

@@ -7,6 +7,7 @@ from enum import Enum
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..impact.models import ImpactDomain
+from ..severity.models import Severity, VersionMagnitude
 
 
 class RevalidationType(str, Enum):
@@ -38,3 +39,11 @@ class DecisionRecord(BaseModel):
     rationale: str
     affected_claims: tuple[str, ...] = Field(default=())
     required_evidence: tuple[str, ...] = Field(default=())
+    # Intelligence/auditability additions (additive; default-safe).
+    severity: Severity | None = None
+    version_magnitude: VersionMagnitude | None = None
+    triggered_by_rule: str = Field(
+        default="",
+        description="Identifier of the rule that produced this decision, e.g. "
+        "'policy:mutect2:minor_version' or 'builtin:category:variant_caller'.",
+    )
