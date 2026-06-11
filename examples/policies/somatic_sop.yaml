@@ -1,0 +1,23 @@
+# Example laboratory revalidation policy (somatic assays).
+# Loaded via assaytrace.policy.load_policy(); overrides built-in defaults only
+# where a rule matches. Every decision records which rule fired.
+name: somatic-sop-v1
+assay_type: somatic
+
+# Component-specific, magnitude-aware rules for the variant caller.
+mutect2:
+  major_version:
+    action: full_revalidation
+    rationale: "Major variant-caller change; full analytical revalidation per SOP-12."
+  minor_version:
+    action: targeted_revalidation
+    rationale: "Minor variant-caller change; targeted analytical revalidation."
+  patch_version:
+    action: documentation_review
+    rationale: "Patch variant-caller change; documentation review sufficient."
+
+# Category-level rule: any reference-genome change requires full revalidation.
+"category:reference_genome":
+  any:
+    action: full_revalidation
+    rationale: "Reference genome change has assay-wide reach; full revalidation."

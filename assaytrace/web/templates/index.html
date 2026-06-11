@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AssayTrace — Clinical NGS Revalidation</title>
+<title>AssayTrace — Change Control for Clinical NGS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -19,51 +19,92 @@
   *{box-sizing:border-box}
   body{margin:0;background:radial-gradient(1100px 540px at 82% -12%,#16264a 0%,var(--navy) 55%);
        color:var(--text);font-family:var(--sans);min-height:100vh}
-  a{color:var(--cyan);text-decoration:none}
-  .contact-bar{background:#0b1324;color:var(--muted);font-size:12px;text-align:center;
-       padding:6px;border-bottom:1px solid var(--line)}
-  .contact-bar b{color:var(--cyan)}
+  a{color:var(--cyan);text-decoration:none} a:hover{text-decoration:underline}
   header.top{display:flex;align-items:center;justify-content:space-between;
        padding:16px 28px;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:13px}
   .brand .mark{width:40px;height:40px;filter:drop-shadow(0 0 14px rgba(6,182,212,.35))}
   .brand h1{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:.2px;margin:0}
   .brand .url{font-size:12px;color:var(--muted)}
-  nav.tabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-  nav.tabs button, nav.tabs a.nav-link{background:transparent;border:1px solid transparent;color:var(--muted);
+  nav.tabs{display:flex;gap:6px}
+  nav.tabs button{background:transparent;border:1px solid transparent;color:var(--muted);
        font-family:var(--sans);font-weight:600;font-size:13px;padding:9px 14px;border-radius:9px;cursor:pointer;transition:.18s}
-  nav.tabs button.active, nav.tabs a.nav-link.active{color:#fff;background:var(--panel);border-color:var(--line)}
-  nav.tabs button:hover, nav.tabs a.nav-link:hover{color:#fff}
-  nav.tabs a.nav-link{text-decoration:none;display:inline-flex;align-items:center}
-  nav.tabs .nav-divider{width:1px;height:22px;background:var(--line);margin:0 2px}
-  main{max-width:1180px;margin:0 auto;padding:30px 28px 80px}
+  nav.tabs button.active{color:#fff;background:var(--panel);border-color:var(--line)}
+  nav.tabs button:hover{color:#fff}
+  main{max-width:1180px;margin:0 auto;padding:30px 28px 40px}
   .view{display:none;animation:fade .35s ease}
   .view.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-  /* Hero */
-  .hero{padding:14px 2px 8px;max-width:760px}
-  .hero .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-       color:var(--cyan);margin-bottom:12px}
-  .hero h2{font-family:var(--display);font-size:34px;line-height:1.12;font-weight:800;margin:0 0 12px;
-       background:linear-gradient(120deg,#fff 30%,#bfe9f4 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p{font-size:15px;line-height:1.6;color:var(--muted);margin:0;max-width:640px}
-  @media(max-width:640px){.hero h2{font-size:26px}}
+  /* Product explanation */
+  .explain{display:grid;grid-template-columns:1.3fr 1fr;gap:22px;align-items:start;
+       background:linear-gradient(180deg,var(--panel),var(--navy-2));border:1px solid var(--line);
+       border-radius:18px;padding:26px 28px;margin-bottom:18px}
+  @media(max-width:860px){.explain{grid-template-columns:1fr}}
+  .explain .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+  .explain h2{font-family:var(--display);font-size:27px;line-height:1.18;font-weight:800;margin:0 0 12px}
+  .explain p{font-size:14.5px;line-height:1.62;color:#cbd5e1;margin:0 0 12px}
+  .explain .who{font-size:13px;color:var(--muted);margin:0}
+  .explain .who b{color:var(--text)}
+  .notbox{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.35);border-radius:12px;padding:14px 16px}
+  .notbox .t{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#fca5a5;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+  .notbox ul{margin:0;padding-left:18px;font-size:13px;color:#e6c9c9;line-height:1.6}
+  .dobox{margin-top:12px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.3);border-radius:12px;padding:14px 16px}
+  .dobox .t{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#6ee7b7;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+  .dobox p{margin:0;font-size:13px;color:#cfeee0;line-height:1.6}
 
-  /* Insight cards */
-  .insights{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0 4px}
-  @media(max-width:820px){.insights{grid-template-columns:repeat(2,1fr)}}
-  .insight{background:linear-gradient(180deg,var(--panel),var(--navy-2));border:1px solid var(--line);
-       border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
-  .insight::after{content:"";position:absolute;inset:0 0 auto 0;height:2px;
-       background:linear-gradient(90deg,var(--cyan),var(--violet))}
-  .insight .v{font-family:var(--mono);font-size:24px;font-weight:700;color:#fff}
-  .insight .k{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:6px}
+  /* How it works flow */
+  .flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:6px 0 8px}
+  .flow .step{flex:1;min-width:120px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+       padding:13px 12px;text-align:center;position:relative}
+  .flow .arrow{display:flex;align-items:center;color:var(--muted);padding:0 4px;font-size:18px}
+  @media(max-width:760px){.flow .arrow{transform:rotate(90deg)} .flow{flex-direction:column} .flow .step{min-width:0}}
+  .flow .n{font-family:var(--mono);font-size:11px;color:var(--cyan)}
+  .flow .s{font-weight:700;font-size:13px;margin-top:4px}
+  .flow .d{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4}
+
+  /* Capability chips (real, replaces fabricated stats) */
+  .caps-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:6px 0 4px}
+  @media(max-width:900px){.caps-grid{grid-template-columns:repeat(2,1fr)}}
+  .capchip{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:15px}
+  .capchip .ci{width:22px;height:22px;color:var(--cyan);margin-bottom:8px}
+  .capchip .t{font-weight:700;font-size:13px}
+  .capchip .d{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+
+  /* Demo ribbon */
+  .ribbon{display:none;align-items:center;gap:14px;border-radius:14px;padding:14px 18px;margin:18px 0 4px;
+       border:1px solid var(--line);background:var(--panel)}
+  .ribbon.show{display:flex}
+  .ribbon.safe{border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.08)}
+  .ribbon.reval{border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.08)}
+  .ribbon .ri{width:26px;height:26px;flex:0 0 auto}
+  .ribbon .txt{flex:1;font-size:13.5px}
+  .ribbon .txt b{font-family:var(--display)}
+  .ribbon.safe .txt b{color:var(--green)} .ribbon.reval .txt b{color:var(--amber)}
 
   h2.sec{font-family:var(--display);font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);
-       margin:30px 0 12px;font-weight:700}
+       margin:30px 0 12px;font-weight:700;display:flex;align-items:center;gap:10px}
+  h2.sec .tag{font-family:var(--mono);font-size:10px;color:var(--cyan);background:rgba(6,182,212,.12);
+       padding:2px 8px;border-radius:999px;letter-spacing:.06em}
 
-  /* Upload zones */
+  /* Supported inputs */
+  .inputs{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:760px){.inputs{grid-template-columns:1fr}}
+  .inrow{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .inrow .h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .inrow .name{font-weight:700;font-size:13.5px}
+  .inrow .fmt{font-family:var(--mono);font-size:10.5px;color:var(--cyan);background:rgba(6,182,212,.12);padding:2px 8px;border-radius:6px}
+  .inrow .d{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+  /* Sample library */
+  .lib{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media(max-width:760px){.lib{grid-template-columns:1fr}}
+  .libcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .libcard .lt{font-weight:700;font-size:15px}
+  .libcard .ld{font-size:12.5px;color:var(--muted);margin:5px 0 14px;line-height:1.5}
+  .libcard .acts{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* Uploads */
   .grid{display:grid;gap:16px}
   .uploads{grid-template-columns:repeat(3,1fr)}
   @media(max-width:880px){.uploads{grid-template-columns:1fr}}
@@ -84,24 +125,21 @@
   .drop input{display:none}
 
   .row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:24px}
-  /* Run button */
   button.cta{position:relative;background:linear-gradient(120deg,var(--cyan),var(--violet));color:#fff;border:none;
        font-family:var(--display);font-weight:700;font-size:15px;padding:14px 30px;border-radius:12px;cursor:pointer;
        box-shadow:0 8px 26px rgba(124,58,237,.35),0 0 0 1px rgba(255,255,255,.06) inset;transition:.2s}
-  button.cta:hover:not(:disabled){transform:translateY(-2px);
-       box-shadow:0 12px 34px rgba(6,182,212,.42),0 0 22px rgba(124,58,237,.35)}
+  button.cta:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 34px rgba(6,182,212,.42),0 0 22px rgba(124,58,237,.35)}
   button.cta:active:not(:disabled){transform:translateY(0)}
   button.cta:disabled{background:#243250;color:#64748b;cursor:not-allowed;box-shadow:none}
   button.ghost{background:var(--panel);color:var(--text);border:1px solid var(--line);
-       font-family:var(--sans);font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer;
-       display:inline-flex;align-items:center;gap:8px;transition:.18s}
+       font-family:var(--sans);font-weight:600;font-size:13px;padding:9px 14px;border-radius:10px;cursor:pointer;
+       display:inline-flex;align-items:center;gap:7px;transition:.18s}
   button.ghost:hover{border-color:var(--cyan);color:#fff}
   .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;
        border-radius:50%;display:inline-block;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px}
   @keyframes spin{to{transform:rotate(360deg)}}
   .err{color:var(--red);font-family:var(--mono);font-size:13px;margin-top:14px}
 
-  /* Decision card */
   .decision-card{display:flex;gap:20px;align-items:center;border-radius:20px;padding:28px 30px;margin-bottom:8px;
        border:1px solid var(--line);position:relative;overflow:hidden}
   .decision-card .dico{flex:0 0 auto;width:58px;height:58px}
@@ -112,12 +150,282 @@
   .decision-card.reval .verdict{color:var(--amber)}
   .decision-card .sub{color:var(--muted);margin-top:6px;font-size:13px}
   .decision-card .actions{margin-top:14px}
+  .exec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);
+       border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:16px}
+  .exec-cell{background:var(--panel);padding:12px 14px}
+  .exec-cell .k{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .exec-cell .v{font-size:14px;font-weight:600;margin-top:5px;line-height:1.35}
+  .exec-cell .v.mono{font-family:var(--mono);font-size:12px;font-weight:500}
 
-  /* Capability / stat cards */
+  .chain{display:flex;flex-direction:column;gap:14px}
+  .chain-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .chain-card.sev-critical{border-left:4px solid var(--red)}
+  .chain-card.sev-high{border-left:4px solid var(--amber)}
+  .chain-card.sev-medium{border-left:4px solid var(--cyan)}
+  .chain-card.sev-low{border-left:4px solid #64748b}
+  .chain-head{display:flex;align-items:center;gap:10px;justify-content:space-between;
+       padding:14px 18px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+  .chain-head .desc{font-size:14px;font-weight:600}
+  .chain-head .desc .ident{font-family:var(--mono);font-size:12px;color:var(--cyan)}
+  .chain-flow{display:flex;flex-wrap:wrap;gap:0;padding:14px 18px}
+  .chain-step{flex:1;min-width:120px;padding:4px 12px 4px 0;position:relative}
+  .chain-step+.chain-step{padding-left:16px;border-left:1px solid var(--line)}
+  .chain-step .k{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .chain-step .v{font-size:13px;font-weight:600;margin-top:5px}
+  .chain-step .v.mono{font-family:var(--mono);font-size:11.5px;font-weight:500;word-break:break-all}
+  .chain-rationale{padding:0 18px 14px;font-size:12.5px;color:#cbd5e1;line-height:1.55}
+  .chain-approval{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:baseline;
+       padding:12px 18px;border-top:1px solid var(--line);background:rgba(16,185,129,.05);font-size:12.5px}
+  .chain-approval.rejected{background:rgba(239,68,68,.06)}
+  .chain-approval.not_reviewed{background:transparent;color:var(--muted)}
+  .chain-approval .ak{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:block}
+  .chain-approval .av{font-weight:600;color:var(--text)}
+  .appr-approved{color:var(--green)} .appr-rejected{color:var(--red)}
+  .appr-pending{color:var(--amber)} .appr-not_reviewed{color:var(--muted)}
+
+  /* severity reasons */
+  .sev-reasons{padding:0 18px 12px}
+  .sev-reasons .lbl{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:4px}
+  .sev-reasons ul{margin:0;padding-left:18px}
+  .sev-reasons li{font-size:12px;color:#cbd5e1;line-height:1.5}
+  /* operational impact panel */
+  .op-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:var(--line);
+       margin:0 18px 14px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .op-cell{background:var(--panel-2);padding:10px 12px}
+  .op-cell .k{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .op-cell .v{font-size:14px;font-weight:700;margin-top:4px}
+  .op-title{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--cyan);margin:0 18px 6px}
+  /* recommended next step (hero) */
+  .nextstep{display:flex;gap:14px;align-items:flex-start;border-radius:14px;padding:16px 18px;margin:18px 0 4px;
+       border:1px solid var(--line);background:linear-gradient(120deg,rgba(6,182,212,.10),rgba(124,58,237,.06))}
+  .nextstep.show{display:flex} .nextstep{display:none}
+  .nextstep .ni{width:26px;height:26px;flex:0 0 auto;color:var(--cyan)}
+  .nextstep .lab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan)}
+  .nextstep .step{font-family:var(--display);font-size:18px;font-weight:700;line-height:1.3;margin-top:4px}
+  .nextstep .meta{font-size:12.5px;color:var(--muted);margin-top:7px}
+  .nextstep .verdict-pill{font-family:var(--display);font-weight:800;font-size:12px;padding:3px 10px;border-radius:999px}
+  .nextstep.safe .verdict-pill{background:rgba(16,185,129,.18);color:var(--green)}
+  .nextstep.reval .verdict-pill{background:rgba(245,158,11,.18);color:var(--amber)}
+  /* aggregation */
+  .agg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+  .agg .a{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .agg .a .n{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1}
+  .agg .a .k{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.06em}
+  /* timeline */
+  .timeline{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;margin-top:6px}
+  .tl-step{flex:1;min-width:130px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 14px;position:relative}
+  .tl-arrow{display:flex;align-items:center;color:var(--muted);padding:0 6px;font-size:16px}
+  @media(max-width:760px){.tl-arrow{transform:rotate(90deg)} .timeline{flex-direction:column}}
+  .tl-step .s{font-weight:700;font-size:12.5px}
+  .tl-step .d{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+  .tl-step .num{font-family:var(--mono);font-size:10px;color:var(--cyan)}
+  /* operational summary (clinical QMS style) */
+  .opsum{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .opsum .row{display:flex;justify-content:space-between;align-items:center;gap:16px;
+       padding:13px 18px;background:var(--panel)}
+  .opsum .row+.row{border-top:1px solid var(--line)}
+  .opsum .row .k{font-size:13px;color:var(--muted)}
+  .opsum .row .v{font-size:15px;font-weight:700;text-align:right}
+  /* top impact changes (dashboard preview) */
+  .ti{display:flex;flex-direction:column;gap:10px}
+  .ti-item{display:flex;align-items:flex-start;gap:13px;background:var(--panel);
+       border:1px solid var(--line);border-radius:12px;padding:13px 16px}
+  .ti-item.sev-critical{border-left:4px solid var(--red)}
+  .ti-item.sev-high{border-left:4px solid var(--amber)}
+  .ti-item.sev-medium{border-left:4px solid var(--cyan)}
+  .ti-item.sev-low{border-left:4px solid #64748b}
+  .ti-rank{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--cyan);min-width:22px}
+  .ti-body{flex:1}
+  .ti-title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .ti-aff{font-size:12px;color:var(--muted);margin-top:4px}
+  .ti-aff b{color:#cbd5e1;font-weight:600}
+  /* approval status panel (Sprint 4) */
+  .appr-pending{color:var(--amber)} .appr-approved_with_conditions{color:var(--cyan)}
+  .chain-approval.pending{background:rgba(245,158,11,.06)}
+  .chain-approval.approved_with_conditions{background:rgba(6,182,212,.06)}
+
+  /* governance KPI strip (Sprint A) */
+  .gov{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px}
+  .gov .g{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .gov .g .n{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1}
+  .gov .g .k{font-size:11px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:.05em}
+  .gov .g.approved .n{color:var(--green)} .gov .g.pending .n{color:var(--amber)}
+  .gov .g.conditions .n{color:var(--cyan)} .gov .g.rejected .n{color:var(--red)}
+  /* approval workflow panel */
+  .appr-history{margin:10px 18px 0;padding:10px 14px;border:1px dashed var(--line);border-radius:10px}
+  .appr-history .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .appr-trail{display:flex;flex-wrap:wrap;align-items:center;gap:0}
+  .appr-node{display:flex;flex-direction:column;gap:2px;padding:4px 0}
+  .appr-node .st{font-size:12.5px;font-weight:700}
+  .appr-node .dt{font-size:10.5px;color:var(--muted);font-family:var(--mono)}
+  .appr-sep{color:var(--muted);padding:0 12px;font-size:14px}
+  .appr-actions{display:flex;flex-wrap:wrap;gap:8px;padding:12px 18px 0}
+  .appr-actions button{font-family:var(--display);font-size:12px;font-weight:600;border-radius:8px;
+       padding:7px 12px;cursor:pointer;border:1px solid var(--line);background:var(--panel-2);color:var(--text)}
+  .appr-actions button:hover{border-color:var(--cyan)}
+  .appr-actions .bn-approve{border-color:rgba(16,185,129,.5);color:var(--green)}
+  .appr-actions .bn-cond{border-color:rgba(6,182,212,.5);color:var(--cyan)}
+  .appr-actions .bn-reject{border-color:rgba(239,68,68,.5);color:var(--red)}
+  /* policy management */
+  .policy-actions{display:flex;gap:10px;margin-bottom:14px}
+  .policy-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+  .policy-card.retired{opacity:.62}
+  .policy-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .policy-head .pname{font-family:var(--display);font-weight:700;font-size:16px}
+  .policy-head .pver{font-family:var(--mono);font-size:12px;color:var(--cyan)}
+  .pstatus{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:3px 9px;border-radius:999px}
+  .pstatus.active{background:rgba(16,185,129,.16);color:var(--green)}
+  .pstatus.draft{background:rgba(245,158,11,.16);color:var(--amber)}
+  .pstatus.retired{background:rgba(148,163,184,.16);color:var(--muted)}
+  .policy-meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .policy-meta .mono{font-family:var(--mono);color:#cbd5e1}
+  .policy-hist{display:flex;align-items:center;gap:0;margin-top:12px;flex-wrap:wrap}
+  .policy-hist .pv{font-family:var(--mono);font-size:11px;padding:4px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2)}
+  .policy-hist .pv.active{border-color:rgba(16,185,129,.5);color:var(--green)}
+  .policy-ctrls{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .policy-ctrls button{font-family:var(--display);font-size:11.5px;font-weight:600;border-radius:8px;
+       padding:6px 11px;cursor:pointer;border:1px solid var(--line);background:var(--panel-2);color:var(--text)}
+  .policy-ctrls button:hover{border-color:var(--cyan)}
+  /* interactive timeline */
+  .tl-step{cursor:pointer;transition:border-color .12s}
+  .tl-step:hover{border-color:var(--cyan)}
+  .tl-step.open{border-color:var(--cyan)}
+  .tl-step .caret{position:absolute;top:11px;right:12px;color:var(--muted);font-size:11px}
+  /* policy management (SOP governance) */
+  .policy-actions{margin-bottom:14px}
+  .pol-family{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px;background:var(--panel)}
+  .pol-family h3{margin:0 0 6px;font-size:15px}
+  .pol-hist{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin:6px 0 10px;font-family:var(--mono);font-size:12px}
+  .pol-hist .v{padding:3px 10px;border:1px solid var(--line);border-radius:999px}
+  .pol-hist .v.active{border-color:var(--green);color:var(--green)}
+  .pol-hist .v.retired{color:var(--muted);text-decoration:line-through}
+  .pol-hist .ar{color:var(--muted);padding:0 7px}
+  .pol-row{display:grid;grid-template-columns:54px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+  .pol-row .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .pol-row .hash{font-family:var(--mono);font-size:11px;color:var(--cyan);word-break:break-all;margin-top:4px}
+  .pol-badge{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;border-radius:999px}
+  .pol-badge.active{background:rgba(16,185,129,.15);color:var(--green)}
+  .pol-badge.draft{background:rgba(245,158,11,.15);color:var(--amber)}
+  .pol-badge.retired,.pol-badge.archived{background:rgba(148,163,184,.12);color:var(--muted)}
+  .pol-hist .v.archived{color:var(--muted);text-decoration:line-through}
+  .pol-acts{display:flex;gap:6px;flex-wrap:wrap}
+  .pol-acts button{font-size:11px;padding:5px 9px}
+  /* system-boundary note (Issue #6) */
+  .boundary-note{background:rgba(6,182,212,.06);border:1px solid var(--line);border-left:3px solid var(--cyan);
+       border-radius:10px;padding:12px 14px;margin:0 0 14px;font-size:12.5px;color:#cbd5e1;line-height:1.55;max-width:900px}
+  /* binder lifecycle status banner (Issue #3) */
+  .bstatus{display:flex;flex-wrap:wrap;gap:18px;align-items:center;border-radius:12px;padding:13px 16px;margin:0 0 14px;border:1px solid var(--line);background:var(--panel)}
+  .bstatus .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .bstatus .badge{font-family:var(--display);font-weight:800;font-size:13px;padding:4px 12px;border-radius:999px}
+  .bstatus.st-draft .badge{background:rgba(245,158,11,.18);color:var(--amber)}
+  .bstatus.st-under_review .badge{background:rgba(6,182,212,.16);color:var(--cyan)}
+  .bstatus.st-approved .badge{background:rgba(16,185,129,.16);color:var(--green)}
+  .bstatus.st-finalized .badge{background:rgba(16,185,129,.24);color:var(--green)}
+  .gate-pill{font-family:var(--mono);font-size:11px;padding:3px 10px;border-radius:999px}
+  .gate-pass{background:rgba(16,185,129,.14);color:var(--green)}
+  .gate-manual_review{background:rgba(245,158,11,.16);color:var(--amber)}
+  .gate-blocked{background:rgba(239,68,68,.18);color:var(--red)}
+  .bstatus .reason{font-size:12px;color:var(--amber);flex-basis:100%}
+  /* utility nav (Support / Documentation / Contact) */
+  .utilnav{display:flex;gap:20px;align-items:center;margin-left:auto;margin-right:28px}
+  .utilnav a{color:var(--muted);font-size:13px;font-weight:600;text-decoration:none;transition:color .15s}
+  .utilnav a:hover{color:var(--cyan)}
+  .contact-btn{background:none;border:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:0}
+  .contact-btn:hover,.contact-btn[aria-expanded="true"]{color:var(--cyan)}
+  @media(max-width:900px){.utilnav{display:none}}
+  /* contact modal */
+  .modal-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+       background:rgba(2,6,20,.72);backdrop-filter:blur(3px);padding:20px;animation:fade .2s ease}
+  /* The `hidden` attribute must win over display:flex above, otherwise the
+     overlay shows on load and cannot be hidden by toggling `hidden` alone. */
+  .modal-overlay[hidden]{display:none}
+  .modal-card{position:relative;width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);
+       border-radius:16px;padding:26px 26px 22px;box-shadow:0 30px 70px rgba(0,0,0,.55)}
+  .modal-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan)}
+  .modal-title{font-family:var(--display);font-size:24px;font-weight:800;margin:4px 0 4px}
+  .modal-sub{color:var(--muted);font-size:13px;margin:0 0 18px;line-height:1.5}
+  .modal-links{display:flex;flex-direction:column;gap:10px}
+  .modal-link{display:flex;gap:13px;align-items:center;padding:12px 14px;border:1px solid var(--line);
+       border-radius:11px;text-decoration:none;color:var(--text);transition:border-color .15s,background .15s}
+  .modal-link:hover{border-color:var(--cyan);background:var(--panel-2)}
+  .modal-link svg{width:22px;height:22px;color:var(--cyan);flex-shrink:0}
+  .modal-link .ml-k{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em}
+  .modal-link .ml-v{display:block;font-size:13.5px;font-weight:600;margin-top:2px;word-break:break-all}
+  .modal-close-x{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);
+       font-size:26px;line-height:1;cursor:pointer}
+  .modal-close-x:hover{color:var(--text)}
+  .modal-close-btn{margin-top:18px;width:100%;background:var(--panel-2);border:1px solid var(--line);
+       color:var(--text);border-radius:10px;padding:11px;font-weight:600;cursor:pointer;font-family:inherit}
+  .modal-close-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+  /* business impact block */
+  .bizimpact{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);
+       border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:0 0 16px}
+  .bizimpact .c{background:var(--panel);padding:13px 15px}
+  .bizimpact .c .k{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .bizimpact .c .v{font-size:16px;font-weight:800;margin-top:5px}
+  .bizimpact .c.hi .v{color:var(--amber)} .bizimpact .c.crit .v{color:var(--red)}
+  /* portfolio */
+  .pf-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:12px;margin-bottom:18px}
+  .pf-kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .pf-kpi .n{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1}
+  .pf-kpi .k{font-size:10.5px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.05em}
+  .pf-kpi.warn .n{color:var(--amber)} .pf-kpi.bad .n{color:var(--red)} .pf-kpi.good .n{color:var(--green)}
+  .pf-table{width:100%;border-collapse:collapse}
+  .pf-table th,.pf-table td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px}
+  .pf-table th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .pf-table tr:hover td{background:var(--panel-2)}
+  .st-pill{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .st-approved{background:rgba(16,185,129,.16);color:var(--green)}
+  .st-under-review{background:rgba(6,182,212,.16);color:var(--cyan)}
+  .st-revalidation-required{background:rgba(245,158,11,.16);color:var(--amber)}
+  .st-draft{background:rgba(148,163,184,.14);color:var(--muted)}
+  .st-blocked{background:rgba(239,68,68,.18);color:var(--red)}
+  .risk-bars{display:flex;flex-direction:column;gap:9px;max-width:520px}
+  .risk-row{display:flex;align-items:center;gap:12px}
+  .risk-row .lbl{width:80px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .risk-row .track{flex:1;background:var(--panel-2);border-radius:7px;overflow:hidden;height:16px}
+  .risk-row .bar{height:16px;border-radius:7px}
+  .risk-row .ct{width:24px;text-align:right;font-weight:700;font-size:13px}
+  .pf-tl{display:flex;gap:16px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .pf-tl .d{font-family:var(--mono);font-size:12px;color:var(--cyan);min-width:92px}
+  .pf-summary{font-size:15px;color:var(--text);margin:0 0 16px;line-height:1.6}
+  .pf-summary b{font-family:var(--display);font-size:17px;color:var(--cyan)}
+  .pf-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .pf-filter{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:999px;
+       padding:6px 14px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+  .pf-filter:hover{color:var(--text)}
+  .pf-filter.active{background:rgba(6,182,212,.14);border-color:var(--cyan);color:var(--cyan)}
+  .pol-meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px 18px;margin:8px 0 4px;font-size:11.5px;color:var(--muted)}
+  .pol-meta-grid b{color:var(--text);font-weight:600}
+  /* dashboard 3-level hierarchy */
+  .level-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+       color:var(--muted);margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:8px}
+  .kpi-card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:15px 16px;position:relative;overflow:hidden}
+  .kpi-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cyan)}
+  .kpi-card.warn::before{background:var(--amber)} .kpi-card.bad::before{background:var(--red)}
+  .kpi-card.good::before{background:var(--green)}
+  .kpi-card .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .kpi-card .v{font-size:20px;font-weight:800;margin-top:6px;line-height:1.15}
+  .kpi-card.warn .v{color:var(--amber)} .kpi-card.bad .v{color:var(--red)} .kpi-card.good .v{color:var(--green)}
+  .sop-detail{margin-top:10px}
+  .sop-detail-box{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+  .sop-d-title{font-family:var(--display);font-weight:700;font-size:13px;margin-bottom:8px}
+  .tl-evidence{margin-top:14px}
+  .tl-evidence .ev{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--cyan);
+       border-radius:8px;padding:9px 13px;font-size:12.5px;color:#cbd5e1;margin-bottom:7px;font-family:var(--mono)}
+  .tl-evidence .ev-title{font-family:var(--display);font-weight:700;font-size:13px;color:var(--text);margin:0 0 8px}
+  /* audit metadata */
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line);
+       border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .meta-cell{background:var(--panel);padding:12px 14px}
+  .meta-cell .k{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .meta-cell .v{font-size:13px;font-weight:600;margin-top:5px;word-break:break-all}
+  .meta-cell .v.mono{font-family:var(--mono);font-size:11.5px;font-weight:500}
+
   .caps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
   @media(max-width:760px){.caps{grid-template-columns:repeat(2,1fr)}}
-  .cap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;
-       display:flex;align-items:center;gap:13px}
+  .cap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;align-items:center;gap:13px}
   .cap .cico{width:24px;height:24px;flex:0 0 auto}
   .cap .n{font-family:var(--mono);font-size:24px;font-weight:700;line-height:1}
   .cap .k{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:4px}
@@ -136,6 +444,15 @@
   .p-improved,.p-added{background:rgba(16,185,129,.18);color:var(--green)}
   .p-within_tolerance{background:rgba(148,163,184,.18);color:var(--muted)}
   .p-classification_changed{background:rgba(245,158,11,.2);color:var(--amber)}
+  .p-low{background:rgba(148,163,184,.18);color:#cbd5e1}
+  .p-medium{background:rgba(6,182,212,.18);color:var(--cyan)}
+  .p-high{background:rgba(245,158,11,.2);color:var(--amber)}
+  .p-critical{background:rgba(239,68,68,.2);color:#fca5a5}
+  .ribbon .txt ul{margin:6px 0 0;padding-left:18px}
+  .ribbon .txt li{margin:2px 0;font-size:13px}
+  .ribbon .rdetail{margin-top:6px;font-size:13px}
+  .ribbon .rk{display:inline-block;min-width:92px;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .approval-ok{color:var(--green)} .approval-warn{color:var(--red)}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:14px}
   .muted{color:var(--muted)}
   .empty{color:var(--muted);font-style:italic;padding:14px 2px}
@@ -151,21 +468,29 @@
   .filters input,.filters select{background:var(--panel);color:var(--text);border:1px solid var(--line);
        border-radius:9px;padding:9px 11px;font-family:var(--sans);font-size:13px}
   .chart-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:8px}
+
+  /* Footer / help */
+  footer.help{border-top:1px solid var(--line);margin-top:40px;padding:26px 28px;color:var(--muted);font-size:13px}
+  footer.help .wrap{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  footer.help b{color:var(--text)}
+
+  /* Inspect modal */
+  .modal{position:fixed;inset:0;background:rgba(4,9,20,.72);display:none;align-items:center;justify-content:center;z-index:50;padding:24px}
+  .modal.show{display:flex}
+  .modal .box{background:var(--navy-2);border:1px solid var(--line);border-radius:16px;max-width:820px;width:100%;max-height:80vh;display:flex;flex-direction:column}
+  .modal .mh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .modal .mh .t{font-family:var(--display);font-weight:700}
+  .modal pre{margin:0;overflow:auto;padding:18px 20px;font-family:var(--mono);font-size:12px;color:#cbd5e1;line-height:1.5}
+  .modal .x{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
 </style>
 </head>
 <body>
-<div class="contact-bar">Contact: <b>esra.zengiinn@gmail.com</b></div>
 <header class="top">
   <div class="brand">
-    <!-- Logo: DNA helix within a compliance shield, with a validation check badge -->
     <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="AssayTrace logo">
-      <defs>
-        <linearGradient id="lg" x1="6" y1="3" x2="42" y2="45" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#06B6D4"/><stop offset="1" stop-color="#7C3AED"/>
-        </linearGradient>
-      </defs>
-      <path d="M24 3 L41 9 V23 C41 34 33 42 24 45 C15 42 7 34 7 23 V9 Z"
-            fill="rgba(6,182,212,0.08)" stroke="url(#lg)" stroke-width="2" stroke-linejoin="round"/>
+      <defs><linearGradient id="lg" x1="6" y1="3" x2="42" y2="45" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#06B6D4"/><stop offset="1" stop-color="#7C3AED"/></linearGradient></defs>
+      <path d="M24 3 L41 9 V23 C41 34 33 42 24 45 C15 42 7 34 7 23 V9 Z" fill="rgba(6,182,212,0.08)" stroke="url(#lg)" stroke-width="2" stroke-linejoin="round"/>
       <path d="M18 13 C30 17 18 24 30 28" stroke="#06B6D4" stroke-width="2" stroke-linecap="round" fill="none"/>
       <path d="M30 13 C18 17 30 24 18 28" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" fill="none"/>
       <line x1="20" y1="15" x2="28" y2="15" stroke="#9aa9c9" stroke-width="1.4" stroke-linecap="round"/>
@@ -176,48 +501,193 @@
     </svg>
     <div><h1>AssayTrace</h1><div class="url">www.assaytrace.com</div></div>
   </div>
+  <div class="utilnav">
+    
+    <button id="contactBtn" class="contact-btn" aria-haspopup="dialog" aria-expanded="false">Contact</button>
+  </div>
   <nav class="tabs">
-    <button type="button" data-view="dashboard" class="active">Dashboard</button>
-    <a href="/about" class="nav-link">About</a>
-    <a href="/docs" class="nav-link">Docs</a>
-    <span class="nav-divider" aria-hidden="true"></span>
-    <button type="button" data-view="audit">Audit &amp; Decision</button>
-    <button type="button" data-view="regression">Regression</button>
-    <button type="button" data-view="variants">Variant Delta</button>
+    <button data-view="dashboard" class="active">Dashboard</button>
+    <button data-view="portfolio">Portfolio</button>
+    <button data-view="audit">Audit &amp; Decision</button>
+    <button data-view="policies">Policies</button>
+    <button data-view="regression">Regression</button>
+    <button data-view="variants">Variant Delta</button>
   </nav>
 </header>
 
 <main>
   <!-- DASHBOARD -->
   <section class="view active" id="dashboard">
-    <div class="hero">
-      <div class="eyebrow">Clinical NGS · Change Control</div>
-      <h2>Change-Control Intelligence for Clinical NGS</h2>
-      <p>Automated impact analysis, revalidation decisions, and audit-ready evidence generation for regulated genomics workflows.</p>
+
+    <!-- Product explanation -->
+    <div class="explain">
+      <div>
+        <div class="eyebrow">Change Control · Revalidation · Auditability</div>
+        <h2>Know what changed between two NGS workflow versions — and what revalidation it requires.</h2>
+        <p>AssayTrace compares two versions of a clinical NGS assay <b>manifest</b> (software, references, parameters,
+           panel, QC, environment, and the performance claims that depend on them), classifies the impact of each change,
+           maps it to affected claims, and produces a defensible revalidation decision with audit-ready evidence.</p>
+        <p class="who"><b>Who it's for:</b> bioinformaticians, clinical genomics labs, and QA/regulatory teams operating
+           under CLIA / CAP / IVDR who need traceable change control across assay versions.</p>
+        <div class="dobox">
+          <div class="t">What it does</div>
+          <p>Manifest diffing → impact classification → claim-dependency tracking → revalidation guidance → audit binder (HTML/PDF).</p>
+        </div>
+      </div>
+      <div class="notbox">
+        <div class="t">What AssayTrace does NOT do</div>
+        <ul>
+          <li>It does <b>not</b> run NGS pipelines or execute workflows.</li>
+          <li>It does <b>not</b> analyze FASTQ / BAM / VCF sequencing data.</li>
+          <li>It does <b>not</b> call, classify, reinterpret, or clinically interpret variants — the Variant Delta only <b>compares result sets you supply</b>.</li>
+          <li>It is <b>not</b> a medical device and does not issue clinical determinations.</li>
+        </ul>
+      </div>
     </div>
 
-    <div class="insights">
-      <div class="insight"><div class="v">1,247</div><div class="k">Changes Analyzed</div></div>
-      <div class="insight"><div class="v">96%</div><div class="k">No-Revalidation Decisions</div></div>
-      <div class="insight"><div class="v">312</div><div class="k">Audit Binders Generated</div></div>
-      <div class="insight"><div class="v">99.4%</div><div class="k">Validation Traceability</div></div>
+    <!-- LEVEL 1 — KPI strip (most important metrics, 10-second read) -->
+    <div class="level-eyebrow" id="kpiEyebrow" style="display:none">At a glance</div>
+    <div id="kpiStrip" class="kpi-strip"></div>
+
+    <!-- Recommended next step (action-oriented hero) -->
+    <div class="nextstep" id="nextStep">
+      <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      <div style="flex:1">
+        <div class="lab">Recommended Next Step</div>
+        <div class="step" id="nextStepText"></div>
+        <div class="meta" id="nextStepMeta"></div>
+      </div>
+      <span class="verdict-pill" id="nextStepVerdict"></span>
     </div>
 
-    <h2 class="sec">Inputs</h2>
+    <!-- Business impact (operations-first) -->
+    <h2 class="sec" id="bizImpactTitle" style="display:none">Business Impact</h2>
+    <div id="bizImpact"></div>
+
+    <!-- Demo result ribbon -->
+    <div class="ribbon" id="demoRibbon">
+      <span id="ribbonIco"></span>
+      <div class="txt" id="ribbonTxt"></div>
+      <button class="ghost" id="ribbonView">View Audit &amp; Decision →</button>
+    </div>
+
+    <!-- Demo aggregation + timeline (filled after analysis) -->
+    <div id="demoExtras"></div>
+
+    <!-- How it works -->
+    <h2 class="sec">How it works <span class="tag">deterministic · rule-driven</span></h2>
+    <div class="flow">
+      <div class="step"><div class="n">INPUT</div><div class="s">Two Manifests</div><div class="d">Baseline vs candidate assay version</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">01</div><div class="s">Diff</div><div class="d">Detect component / parameter / QC changes</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">02</div><div class="s">Impact</div><div class="d">Classify each change's analytical domain</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">03</div><div class="s">Claims</div><div class="d">Map changes to dependent claims</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">04</div><div class="s">Decision</div><div class="d">Revalidation level + rationale</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">OUT</div><div class="s">Audit Binder</div><div class="d">Evidence-backed HTML / PDF</div></div>
+    </div>
+
+    <!-- Sample library -->
+    <h2 class="sec">Sample Manifest Library</h2>
+    <div class="lib">
+      <div class="libcard">
+        <div class="lt">Somatic Assay Example</div>
+        <div class="ld">SolidTumor500 targeted somatic panel (FFPE). The candidate version bumps the variant caller — a change that triggers targeted analytical revalidation.</div>
+        <div class="acts">
+          <button class="ghost" data-load="somatic">⚡ Load into demo</button>
+          <button class="ghost" data-inspect="somatic_old">👁 Inspect</button>
+          <button class="ghost" data-download="somatic_old">⬇ Download</button>
+        </div>
+      </div>
+      <div class="libcard">
+        <div class="lt">Germline Assay Example</div>
+        <div class="ld">HereditaryCancer76 germline panel (blood/saliva). Demonstrates how the same change-control logic applies to a germline workflow.</div>
+        <div class="acts">
+          <button class="ghost" data-load="germline">⚡ Load into demo</button>
+          <button class="ghost" data-inspect="germline_old">👁 Inspect</button>
+          <button class="ghost" data-download="germline_old">⬇ Download</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supported inputs -->
+    <h2 class="sec">Supported Inputs &amp; Formats</h2>
+    <div class="inputs">
+      <div class="inrow"><div class="h"><span class="name">Assay Manifest</span><span class="fmt">JSON / YAML</span></div>
+        <div class="d">The core input. A structured description of one assay version. Two are compared (old vs new). Required.</div></div>
+      <div class="inrow"><div class="h"><span class="name">Software Components</span><span class="fmt">in manifest</span></div>
+        <div class="d">Aligner, variant/CNV/SV callers, filters — name, version, and parameters.</div></div>
+      <div class="inrow"><div class="h"><span class="name">Reference Resources</span><span class="fmt">in manifest</span></div>
+        <div class="d">Reference genome build/version and target BED/panel definitions.</div></div>
+      <div class="inrow"><div class="h"><span class="name">Annotation Databases</span><span class="fmt">in manifest</span></div>
+        <div class="d">ClinVar, gnomAD, COSMIC, transcript sets — referenced by version, not re-run.</div></div>
+      <div class="inrow"><div class="h"><span class="name">Environment Metadata</span><span class="fmt">in manifest</span></div>
+        <div class="d">Container runtime, image digest, workflow engine, build provenance.</div></div>
+      <div class="inrow"><div class="h"><span class="name">Benchmark &amp; Variants</span><span class="fmt">JSON (optional)</span></div>
+        <div class="d">GIAB precision/recall/F1 for regression, and reportable-variant lists for classification deltas.</div></div>
+    </div>
+
+    <!-- Real capabilities (replaces fabricated stats) -->
+    <h2 class="sec">Capabilities</h2>
+    <div class="caps-grid" id="capChips"></div>
+
+    <!-- Inputs / upload -->
+    <h2 class="sec">Analyze Your Own Manifests</h2>
     <div class="grid uploads" id="dropzones"></div>
     <div class="row">
       <button class="cta" id="runBtn" disabled>Run Revalidation</button>
-      <button class="ghost" id="demoBtn">Try Demo</button>
+      <button class="ghost" id="demoBtn">↻ Reload sample demo</button>
       <span class="muted" id="hintText">Upload the old and new manifests to begin.</span>
     </div>
     <div class="err" id="errBox" style="display:none"></div>
   </section>
 
   <!-- AUDIT & DECISION -->
+  <section class="view" id="portfolio">
+    <h2 class="sec">Laboratory Portfolio <span class="tag">deterministic demo data</span></h2>
+    <p class="muted" style="margin:0 0 12px;font-size:13px">Every status, risk level, and count below is computed from a real audit binder produced by the engine — not mock data.</p>
+    <div id="pfSummary" class="pf-summary"></div>
+    <div id="pfKpis" class="pf-kpis"></div>
+    <h2 class="sec">Assays</h2>
+    <div class="pf-filters" id="pfFilters">
+      <button class="pf-filter active" data-filter="All">All</button>
+      <button class="pf-filter" data-filter="Approved">Approved</button>
+      <button class="pf-filter" data-filter="Under Review">Under Review</button>
+      <button class="pf-filter" data-filter="Revalidation Required">Revalidation Required</button>
+      <button class="pf-filter" data-filter="Blocked">Blocked</button>
+      <button class="pf-filter" data-filter="Draft">Draft</button>
+    </div>
+    <div class="panel" id="pfTable"><div class="empty">Loading portfolio…</div></div>
+    <h2 class="sec">Portfolio Risk Distribution</h2>
+    <div id="pfRisk" class="risk-bars"></div>
+    <h2 class="sec">Portfolio Activity</h2>
+    <div id="pfTimeline"></div>
+  </section>
+
   <section class="view" id="audit">
     <div id="decisionCard" class="empty">Run an analysis from the Dashboard to see the decision.</div>
     <div class="caps" id="capRow" style="display:none"></div>
     <div id="auditBody"></div>
+  </section>
+
+  <!-- POLICIES / SOP GOVERNANCE -->
+  <section class="view" id="policies">
+    <h2 class="sec">Policy Management <span class="tag">SOP governance</span></h2>
+    <p class="muted" style="margin:0 0 14px;max-width:760px;font-size:13.5px">
+      Laboratory SOPs that drive revalidation decisions. Versions are tracked with a
+      deterministic content hash so the exact rule source behind any decision is auditable.
+      Governance actions (create, duplicate, version, activate, retire) simulate the
+      laboratory change-control workflow — no authentication.</p>
+    <div class="policy-actions">
+      <button class="ghost" id="polCreate">+ Create Policy</button>
+      <button class="ghost" id="polUpload">⬆ Upload Policy</button>
+    </div>
+    <div id="polMetrics" class="pf-kpis"></div>
+    <div id="policyCompare"></div>
+    <div id="policyBody" class="empty">Loading policies…</div>
   </section>
 
   <!-- REGRESSION -->
@@ -229,23 +699,82 @@
   <!-- VARIANT DELTA -->
   <section class="view" id="variants">
     <h2 class="sec">Reportable Variant Delta</h2>
+    <div class="boundary-note">
+      <b>Scope:</b> AssayTrace <b>compares variant outputs you supply</b>. It does
+      <b>not</b> call, classify, reinterpret, or clinically interpret variants, and
+      produces no medical interpretation. The rows below report differences between
+      two supplied result sets only — classification labels shown are carried over
+      verbatim from your inputs.
+    </div>
     <div class="filters" id="variantFilters" style="display:none">
       <input id="vSearch" placeholder="Search gene or variant…">
       <select id="vGene"><option value="">All genes</option></select>
       <select id="vClass"><option value="">All classifications</option></select>
       <select id="vType">
-        <option value="">All changes</option>
-        <option value="added">Added</option>
-        <option value="removed">Removed</option>
-        <option value="classification_changed">Classification changed</option>
+        <option value="">All changes</option><option value="added">Added</option>
+        <option value="removed">Removed</option><option value="classification_changed">Classification changed</option>
       </select>
     </div>
     <div id="variantBody" class="empty">No variant comparison. Provide old + new reportable variants JSON.</div>
   </section>
 </main>
 
+<!-- Contact modal -->
+<div id="contactOverlay" class="modal-overlay" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
+    <button class="modal-close-x" id="contactCloseX" aria-label="Close">&times;</button>
+    <div class="modal-eyebrow">AssayTrace</div>
+    <h2 id="contactModalTitle" class="modal-title">Contact</h2>
+    <p class="modal-sub">Built by Esra Zengin — reach out for pilots, feedback, or questions.</p>
+    <div class="modal-links">
+      <a class="modal-link" href="mailto:esra.zengiinn@gmail.com">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        <span><span class="ml-k">Email</span><span class="ml-v">esra.zengiinn@gmail.com</span></span></a>
+      <a class="modal-link" href="https://www.linkedin.com/in/esra-zengin-" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 11v5M8 8v.01M12 16v-3a2 2 0 0 1 4 0v3"/></svg>
+        <span><span class="ml-k">LinkedIn</span><span class="ml-v">linkedin.com/in/esra-zengin-</span></span></a>
+      <a class="modal-link" href="https://github.com/esrazngin" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+        <span><span class="ml-k">GitHub</span><span class="ml-v">github.com/esrazngin</span></span></a>
+    </div>
+    <button class="modal-close-btn" id="contactClose">Close</button>
+  </div>
+</div>
+
+<footer class="help">
+  <div class="wrap">
+    <div><b>AssayTrace</b> · Change-control &amp; revalidation for clinical NGS · MVP preview<br>
+      Deterministic, rule-driven, fully auditable — no AI/LLM in the decision path.</div>
+    <div>Support, Documentation &amp; Contact are available in the top navigation.<br>
+      <a href="https://www.assaytrace.com">www.assaytrace.com</a></div>
+  </div>
+</footer>
+
+<div class="modal" id="modal"><div class="box">
+  <div class="mh"><span class="t" id="modalTitle">Manifest</span><button class="x" id="modalClose">✕</button></div>
+  <pre id="modalBody"></pre>
+</div></div>
+
 <script>
+const DEMO = {{ demo_json|safe }};
+
 const ICON_UPLOAD = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 9 12 4 17 9"/><line x1="12" y1="4" x2="12" y2="16"/></svg>';
+const ICON_SAFE = '<svg class="dico" viewBox="0 0 48 48" fill="none" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4 L40 9 V23 C40 33 33 41 24 44 C15 41 8 33 8 23 V9 Z" fill="rgba(16,185,129,.10)"/><path d="M17 24 l5 5 l10 -12"/></svg>';
+const ICON_WARN = '<svg class="dico" viewBox="0 0 48 48" fill="none" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 L43 39 H5 Z" fill="rgba(245,158,11,.10)"/><line x1="24" y1="19" x2="24" y2="29"/><circle cx="24" cy="34" r="1.6" fill="#F59E0B" stroke="none"/></svg>';
+const RI_SAFE = '<svg class="ri" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V5z"/><path d="M8.5 12l2.5 2.5 5-6"/></svg>';
+const RI_WARN = '<svg class="ri" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="1" fill="#F59E0B" stroke="none"/></svg>';
+
+// Real capabilities (no fabricated numbers)
+const CAPS = [
+  ["Manifest Diffing","Detects added/removed/changed components, parameters, QC thresholds, panel and environment."],
+  ["Impact Classification","Assigns each change a deterministic analytical impact domain."],
+  ["Claim Dependency Tracking","Links every change to the performance claims that depend on it."],
+  ["Revalidation Guidance","Recommends the required revalidation level with an explicit rationale."],
+  ["Audit-Ready Outputs","Generates deterministic HTML and PDF binders for change-control records."],
+];
+const capI='<svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
+document.getElementById("capChips").innerHTML = CAPS.map(([t,d])=>
+  `<div class="capchip">${capI}<div class="t">${t}</div><div class="d">${d}</div></div>`).join("");
 
 const DROPS = [
   {key:"old_manifest", label:"Old Manifest", hint:"Baseline manifest (JSON)", req:true},
@@ -256,22 +785,20 @@ const DROPS = [
   {key:"new_variants", label:"New Reportable Variants", hint:"Variants JSON (optional)"},
 ];
 const files = {};
-let lastBinder = null;
-let lastDeltas = [];
+const zoneEls = {};
+let lastBinder = null, lastDeltas = [], lastView = null, lastData = null;
 const NO_REVAL = new Set(["no_revalidation_required","documentation_update"]);
 
 const zonesEl = document.getElementById("dropzones");
 DROPS.forEach(d=>{
   const z = document.createElement("label");
   z.className = "drop" + (d.req ? " req":"");
-  z.innerHTML = `${ICON_UPLOAD}
-                 <div class="label">${d.label}${d.req?' *':''}</div>
+  z.innerHTML = `${ICON_UPLOAD}<div class="label">${d.label}${d.req?' *':''}</div>
                  <div class="dnd">Drag &amp; Drop or Click to Upload</div>
-                 <div class="hint">${d.hint}</div>
-                 <div class="file"></div>
+                 <div class="hint">${d.hint}</div><div class="file"></div>
                  <input type="file" accept=".json,application/json">`;
-  const input = z.querySelector("input");
-  const fileEl = z.querySelector(".file");
+  const input = z.querySelector("input"), fileEl = z.querySelector(".file");
+  zoneEls[d.key] = {zone:z, fileEl};
   const set = f => { if(!f) return; files[d.key]=f; fileEl.textContent="✓ "+f.name; z.classList.add("filled"); refresh(); };
   input.addEventListener("change", e=>set(e.target.files[0]));
   z.addEventListener("dragover", e=>{e.preventDefault();z.classList.add("over");});
@@ -286,71 +813,369 @@ function refresh(){
   document.getElementById("hintText").textContent = ready
     ? "Ready. Click Run Revalidation." : "Upload the old and new manifests to begin.";
 }
+function jsonFile(obj,name){ return new File([JSON.stringify(obj,null,2)], name, {type:"application/json"}); }
+function loadFile(key,obj,name){ files[key]=jsonFile(obj,name); const z=zoneEls[key];
+  z.fileEl.textContent="✓ "+name; z.zone.classList.add("filled"); }
+function clearOptional(){ ["baseline_benchmark","current_benchmark","old_variants","new_variants"].forEach(k=>{
+  delete files[k]; const z=zoneEls[k]; z.fileEl.textContent=""; z.zone.classList.remove("filled"); });
+  delete files.policy; delete files.approvals; }
 
 document.querySelectorAll("nav.tabs button").forEach(b=>{
   b.onclick=()=>{
     document.querySelectorAll("nav.tabs button").forEach(x=>x.classList.remove("active"));
     document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-    document.getElementById(b.dataset.view).classList.add("active");
+    b.classList.add("active"); document.getElementById(b.dataset.view).classList.add("active");
+    window.scrollTo({top:0,behavior:"smooth"});
+    if(b.dataset.view==="portfolio") loadPortfolio();
   };
 });
 function goTab(name){ document.querySelector(`nav.tabs button[data-view="${name}"]`).click(); }
 
-async function runAnalysis(fetcher){
-  const err=document.getElementById("errBox");
+// Contact modal — open/close, overlay click, ESC, Close button.
+(function(){
+  const btn=document.getElementById("contactBtn"), overlay=document.getElementById("contactOverlay");
+  if(!btn||!overlay) return;
+  const card=overlay.querySelector(".modal-card");
+  const open=()=>{ overlay.hidden=false; btn.setAttribute("aria-expanded","true"); document.body.style.overflow="hidden"; };
+  const close=()=>{ overlay.hidden=true; btn.setAttribute("aria-expanded","false"); document.body.style.overflow=""; };
+  btn.addEventListener("click", open);
+  document.getElementById("contactClose").addEventListener("click", close);
+  document.getElementById("contactCloseX").addEventListener("click", close);
+  overlay.addEventListener("click", e=>{ if(!card.contains(e.target)) close(); });  // click outside
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !overlay.hidden) close(); });
+})();
+
+async function runAnalysis(){
+  const btn=document.getElementById("runBtn"), err=document.getElementById("errBox");
   err.style.display="none";
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Analyzing…';
+  const fd=new FormData();
+  Object.entries(files).forEach(([k,f])=>fd.append(k,f));
   try{
-    const r=await fetcher();
+    const r=await fetch("/api/analyze",{method:"POST",body:fd});
     const data=await r.json();
     if(!r.ok) throw new Error(data.error||"Analysis failed");
+    lastData=data; lastView=data.view;
     lastBinder=data.binder; lastDeltas=data.binder.variant_classification_deltas||[];
     renderAudit(data); renderRegression(data.binder); renderVariants(lastDeltas);
-    goTab("audit");
+    showRibbon(data);
+    return data;
   }catch(e){ err.textContent=e.message; err.style.display="block"; }
+  finally{ btn.disabled=false; btn.textContent="Run Revalidation"; refresh(); }
+}
+document.getElementById("runBtn").onclick = runAnalysis;
+
+function sevMap(b){ const m={}; (b.change_severities||[]).forEach(s=>m[s.change_id]=s); return m; }
+
+// ---- shared, view-driven render helpers (data.view from the server) ----
+function businessImpactHtml(bi){
+  if(!bi) return "";
+  const riskCls = bi.highest_risk==="HIGH"?"hi":(bi.highest_risk==="CRITICAL"?"crit":"");
+  const cells=[
+    ["Affected Assays", bi.affected_assays, ""],
+    ["Affected Clinical Claims", bi.affected_claims, ""],
+    ["Highest Risk", bi.highest_risk, riskCls],
+    ["Recommended Action", bi.recommended_action, ""],
+    ["Estimated Effort", bi.estimated_effort, ""],
+    ["Estimated Review Time", bi.estimated_review_time, ""],
+    ["Required Benchmark Runs", bi.required_benchmark_runs, ""],
+    ["Regression Status", bi.regression_status, bi.regression_status==="Blocked"?"crit":(bi.regression_status!=="Pass"?"hi":"")],
+    ["Approval Status", bi.approval_status, ""],
+    ["Finalizable", bi.finalizable?"Yes":"No", bi.finalizable?"":"hi"],
+  ];
+  return `<div class="bizimpact">${cells.map(([k,v,c])=>`<div class="c ${c}"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join("")}</div>`;
+}
+function lifecycleBannerHtml(lc, gate){
+  if(!lc) return "";
+  const g=gate||{state:"pass",severity:"none",evaluated:false};
+  const gateTxt=g.evaluated?`${g.state.replace(/_/g,' ').toUpperCase()} (${esc(g.severity)})`:"Not evaluated";
+  return `<div class="bstatus st-${(lc.status||'').toLowerCase()}">
+    <div><div class="lbl">Binder Status</div><span class="badge">${esc(lc.status_label)}</span></div>
+    <div><div class="lbl">Regression Gate</div><span class="gate-pill gate-${esc(g.state)}">${gateTxt}</span></div>
+    <div><div class="lbl">Finalizable</div><b>${lc.can_finalize?"Yes":"No"}</b></div>
+    ${lc.status!=='FINALIZED'?`<div class="reason">⚠ ${esc((lc.reasons||[])[0]||'')}</div>`:''}
+  </div>`;
+}
+function operationalSummaryHtml(agg){
+  const sev=agg.highest_severity?pill(agg.highest_severity,agg.highest_severity.toUpperCase()):"—";
+  const rows=[
+    ["Affected Clinical Claims", String(agg.claims_impacted)],
+    ["Highest Risk Level", sev],
+    ["Recommended Revalidation Scope", esc(agg.recommended_scope)],
+    ["Estimated Laboratory Effort", esc(agg.highest_effort)],
+    ["Estimated Review Time", esc(agg.estimated_review_time)],
+    ["Required Benchmark Runs", String(agg.total_benchmark_runs)],
+    ["Approved Deviations", String(agg.approved_deviations)],
+  ];
+  return `<div class="opsum">${rows.map(([k,v])=>`<div class="row"><div class="k">${esc(k)}</div><div class="v">${v}</div></div>`).join("")}</div>`;
+}
+function topImpactHtml(items){
+  if(!items || !items.length) return '<div class="empty">No impacting changes detected.</div>';
+  return `<div class="ti">${items.map((t,i)=>{
+    const aff=(t.affected_claims||[]).length?t.affected_claims.join(", "):"No specific claim";
+    return `<div class="ti-item sev-${t.severity||'low'}">
+      <div class="ti-rank">${i+1}</div>
+      <div class="ti-body">
+        <div class="ti-title">${esc(t.title)} ${t.severity?pill(t.severity,t.severity.toUpperCase()):""}</div>
+        <div class="ti-aff">Affects: <b>${esc(aff)}</b></div>
+      </div></div>`;
+  }).join("")}</div>`;
+}
+// Interactive timeline: stages expand to reveal the evidence behind them.
+const TL_DATA = {};
+function timelineHtml(tl, prefix){
+  prefix = prefix || "tl";
+  TL_DATA[prefix] = tl;
+  const strip = tl.map((t,i)=>
+    `${i?'<div class="tl-arrow">→</div>':''}<div class="tl-step" data-tlp="${prefix}" data-tli="${i}">
+       <div class="caret">▸</div><div class="num">0${i+1}</div><div class="s">${esc(t.stage)}</div><div class="d">${esc(t.detail)}</div></div>`
+  ).join("");
+  return `<div class="timeline">${strip}</div><div class="tl-evidence" id="${prefix}-ev"></div>`;
+}
+function tlToggle(prefix, i){
+  const tl=TL_DATA[prefix]; if(!tl) return;
+  const ev=document.getElementById(prefix+"-ev");
+  const steps=document.querySelectorAll(`.tl-step[data-tlp="${prefix}"]`);
+  const already=steps[i] && steps[i].classList.contains("open");
+  steps.forEach(s=>s.classList.remove("open"));
+  if(already){ ev.innerHTML=""; return; }
+  if(steps[i]) steps[i].classList.add("open");
+  const stage=tl[i];
+  ev.innerHTML=`<div class="ev-title">${esc(stage.stage)} — evidence</div>`+
+    (stage.items||[]).map(x=>`<div class="ev">${esc(x)}</div>`).join("");
+  ev.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+document.addEventListener("click", e=>{
+  const step=e.target.closest(".tl-step[data-tlp]");
+  if(step) tlToggle(step.dataset.tlp, +step.dataset.tli);
+});
+
+function governanceHtml(gov){
+  const cells=[
+    ["g", gov.decisions, "Decisions"],
+    ["pending", gov.pending, "Pending Review"],
+    ["approved", gov.approved, "Approved"],
+    ["conditions", gov.approved_with_conditions, "Approved w/ Conditions"],
+    ["rejected", gov.rejected, "Rejected"],
+    ["g", gov.not_reviewed, "Not Reviewed"],
+  ];
+  return `<div class="gov">${cells.map(([c,n,k])=>`<div class="g ${c}"><div class="n">${n}</div><div class="k">${esc(k)}</div></div>`).join("")}</div>`;
+}
+function auditMetadataHtml(m){
+  const cells=[
+    ["Audit Artifact ID", m.artifact_id, true],
+    ["Binder Hash", m.binder_hash, true],
+    ["Policy", `${esc(m.policy_name||"Built-in defaults")} ${esc(m.policy_version||"")}`, false],
+    ["Policy Hash", m.policy_hash||"—", true],
+    ["Old Manifest Hash", m.old_manifest_hash, true],
+    ["New Manifest Hash", m.new_manifest_hash, true],
+    ["Generation Timestamp", m.generated_at, false],
+    ["Changes / Decisions", `${m.change_count} / ${m.decision_count}`, false],
+    ["Approvals Recorded", String(m.approval_count), false],
+    ["Approval IDs", (m.approval_ids||[]).join(", ")||"—", true],
+  ];
+  return `<div class="meta-grid">${cells.map(([k,val,mono])=>`<div class="meta-cell"><div class="k">${esc(k)}</div><div class="v ${mono?'mono':''}">${esc(val)}</div></div>`).join("")}</div>`;
 }
 
-document.getElementById("runBtn").onclick = async ()=>{
-  const btn=document.getElementById("runBtn");
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Analyzing…';
-  await runAnalysis(()=>{
-    const fd=new FormData();
-    Object.entries(files).forEach(([k,f])=>fd.append(k,f));
-    return fetch("/api/analyze",{method:"POST",body:fd});
-  });
-  btn.disabled=false; btn.textContent="Run Revalidation"; refresh();
-};
+function opPanelHtml(op){
+  const cells=[["Revalidation scope",op.revalidation_scope],["Benchmark runs",op.expected_benchmark_runs],
+    ["Estimated effort",op.estimated_effort],["Review time",op.estimated_review_time],["Affected claims",op.affected_claims]];
+  return `<div class="op-title">Operational impact</div><div class="op-panel">${cells.map(([k,v])=>`<div class="op-cell"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join("")}</div>`;
+}
 
-document.getElementById("demoBtn").onclick = async ()=>{
-  const btn=document.getElementById("demoBtn");
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Running demo…';
-  await runAnalysis(()=>fetch("/demo",{method:"POST"}));
-  btn.disabled=false; btn.textContent="Try Demo";
-};
+// Approval workflow panel: latest disposition + history trail + governance actions.
+function approvalPanelHtml(r){
+  const a=r.approval||{status:"not_reviewed"};
+  const hist=(a.history||[]);
+  const trail = hist.length>1 ? `<div class="appr-history"><div class="lbl">Approval History</div><div class="appr-trail">`+
+    hist.map((e,i)=>`${i?'<span class="appr-sep">↓</span>':''}<div class="appr-node"><span class="st appr-${e.status}">${esc(e.status_label)}</span><span class="dt">${esc(e.date||"")}${e.reviewer?" · "+esc(e.reviewer):""}</span></div>`).join("")+
+    `</div></div>` : "";
+  const detail = a.status==="not_reviewed"
+    ? `<div class="chain-approval not_reviewed"><div><span class="ak">Approval status</span><span class="av appr-not_reviewed">${esc(a.status_label||"Not Reviewed")}</span></div><div class="muted">No documented laboratory disposition for this change.</div></div>`
+    : `<div class="chain-approval ${a.status}">
+        <div><span class="ak">Approval status</span><span class="av appr-${a.status}">${esc(a.status_label||a.status)}</span></div>
+        <div><span class="ak">Disposition</span><span class="av">${esc(a.disposition||"—")}</span></div>
+        <div><span class="ak">Approval ID</span><span class="av" style="font-family:var(--mono);font-size:11.5px">${esc(a.approval_id||"—")}</span></div>
+        <div><span class="ak">Reviewer</span><span class="av">${esc(a.reviewer||"—")}</span></div>
+        <div><span class="ak">Date</span><span class="av">${esc(a.approval_date||"—")}</span></div>
+        ${a.conditions?`<div style="flex:1 1 100%"><span class="ak">Conditions</span><span class="av" style="font-weight:500">${esc(a.conditions)}</span></div>`:""}
+        <div style="flex:1 1 240px"><span class="ak">Rationale</span><span class="av" style="font-weight:500">${esc(a.rationale||"—")}</span></div>
+      </div>`;
+  const actions=`<div class="appr-actions">
+      <button class="bn-approve" onclick="applyDisposition('${encodeURIComponent(r.change_id)}','approved')">Approve</button>
+      <button class="bn-cond" onclick="applyDisposition('${encodeURIComponent(r.change_id)}','approved_with_conditions')">Approve With Conditions</button>
+      <button class="bn-reject" onclick="applyDisposition('${encodeURIComponent(r.change_id)}','rejected')">Reject</button>
+    </div>`;
+  return detail + trail + actions;
+}
+
+function chainCardHtml(r){
+  const sevClass=r.severity?`sev-${r.severity}`:"sev-low";
+  const claims=(r.affected_claims||[]).length?r.affected_claims.join(", "):"None";
+  const reasons=(r.severity_reasons||[]).map(x=>`<li>${esc(x)}</li>`).join("");
+  const policyLine = r.policy_name
+    ? `<div class="chain-step"><div class="k">Policy source</div><div class="v">${esc(r.policy_name)} <span class="muted">${esc(r.policy_version||"")}</span><div class="v mono" style="margin-top:2px">${esc(r.policy_hash||"")}</div></div></div>`
+    : "";
+  return `<div class="chain-card ${sevClass}">
+    <div class="chain-head">
+      <div class="desc">Detected change: <span class="ident">${esc(r.identity)}</span></div>
+      ${r.severity?pill(r.severity,r.severity.toUpperCase()):""}
+    </div>
+    <div class="chain-flow">
+      <div class="chain-step"><div class="k">Version magnitude</div><div class="v">${esc((r.version_magnitude||"none").toUpperCase())}</div></div>
+      <div class="chain-step"><div class="k">Severity</div><div class="v">${r.severity?r.severity.toUpperCase():"—"}</div></div>
+      <div class="chain-step"><div class="k">Triggered rule</div><div class="v">${esc(r.rule_label)}<div class="v mono" style="margin-top:2px">${esc(r.rule_id||"")}</div></div></div>
+      <div class="chain-step"><div class="k">Affected claims</div><div class="v">${esc(claims)}</div></div>
+      <div class="chain-step"><div class="k">Recommended action</div><div class="v">${esc(r.action_label)}</div></div>
+      ${policyLine}
+    </div>
+    ${reasons?`<div class="sev-reasons"><div class="lbl">Severity reasoning</div><ul>${reasons}</ul></div>`:""}
+    ${opPanelHtml(r.operational)}
+    <div class="chain-rationale"><b>Why:</b> ${esc(r.rationale)}${(r.required_evidence||[]).length?`<br><b>Evidence:</b> ${esc(r.required_evidence.join("; "))}`:""}</div>
+    ${approvalPanelHtml(r)}
+  </div>`;
+}
+
+// --- Approval workflow simulation (governance only; no auth) ---
+const REVIEWER_SIM="Lab Director (this session)";
+function applyDisposition(cidEnc, status){
+  const cid=decodeURIComponent(cidEnc);
+  if(!lastView) return;
+  const row=lastView.decisions.find(d=>d.change_id===cid); if(!row) return;
+  const a=row.approval; a.history=a.history||[];
+  const labelMap={approved:"Approved",approved_with_conditions:"Approved With Conditions",rejected:"Rejected",pending:"Pending Review",not_reviewed:"Not Reviewed"};
+  const dispMap={approved:"Approved Deviation",approved_with_conditions:"Approved Deviation (conditional)",rejected:"Rejected - revalidation required",pending:"Pending laboratory review",not_reviewed:"Awaiting laboratory review"};
+  const date=(lastView.audit_metadata&&lastView.audit_metadata.generated_at||"").slice(0,10)||new Date().toISOString().slice(0,10);
+  const baseId=(a.approval_id||("APR-"+cid.length)).split("-").slice(0,2).join("-");
+  const conditions = status==="approved_with_conditions" ? "Conditions recorded by reviewer." : null;
+  const ev={approval_id:`${baseId}-${a.history.length+1}`,status,status_label:labelMap[status],
+    reviewer:REVIEWER_SIM,date,conditions,rationale:`Disposition recorded via governance workflow (${labelMap[status]}).`};
+  a.history.push(ev);
+  a.status=status; a.status_label=labelMap[status]; a.disposition=dispMap[status];
+  a.approval_id=ev.approval_id; a.reviewer=REVIEWER_SIM; a.approval_date=date;
+  a.conditions=conditions; a.rationale=ev.rationale;
+  // recompute governance counts deterministically from current dispositions
+  const g={decisions:lastView.decisions.length,not_reviewed:0,pending:0,approved:0,approved_with_conditions:0,rejected:0};
+  lastView.decisions.forEach(d=>{ g[d.approval.status]=(g[d.approval.status]||0)+1; });
+  g.reviewed=g.pending+g.approved+g.approved_with_conditions+g.rejected;
+  lastView.governance=g;
+  rerenderGovernance();
+}
+function rerenderGovernance(){
+  // Re-render the audit body + dashboard governance from the mutated lastView.
+  if(lastData){ renderAudit(lastData); const ge=document.getElementById("govKpi"); if(ge) ge.innerHTML=governanceHtml(lastView.governance); }
+}
+
+function showRibbon(data){
+  const safe=data.decision==="SAFE_TO_DEPLOY", b=data.binder, v=data.view, agg=v.aggregate;
+  // Recommended next step hero (Feature 4)
+  const ns=document.getElementById("nextStep");
+  ns.className="nextstep show "+(safe?"safe":"reval");
+  document.getElementById("nextStepText").textContent=v.recommended_next_step;
+  document.getElementById("nextStepMeta").innerHTML=
+    `${agg.changes} change(s) · highest severity <b>${(agg.highest_severity||"—").toUpperCase()}</b> · `+
+    `${agg.claims_impacted} claim(s) impacted · ${agg.revalidation_actions} action(s) · ${agg.approved_deviations} approved`;
+  document.getElementById("nextStepVerdict").textContent=safe?"SAFE TO DEPLOY":"REVALIDATION REQUIRED";
+
+  // Compact detected ribbon
+  const rb=document.getElementById("demoRibbon");
+  rb.className="ribbon show "+(safe?"safe":"reval");
+  document.getElementById("ribbonIco").innerHTML = safe?RI_SAFE:RI_WARN;
+  const bullets=v.decisions.slice(0,3).map(r=>`<li>${esc(r.description)} ${r.severity?pill(r.severity,r.severity.toUpperCase()):""}</li>`);
+  if(v.decisions.length>3) bullets.push(`<li class="muted">…and ${v.decisions.length-3} more change(s)</li>`);
+  document.getElementById("ribbonTxt").innerHTML =
+    `<div><b>${safe?"SAFE TO DEPLOY":"REVALIDATION REQUIRED"}</b></div>`+
+    `<div class="rdetail"><span class="rk">Detected</span><ul>${bullets.join("")}</ul></div>`;
+
+  // Business impact (operations-first)
+  document.getElementById("bizImpactTitle").style.display="";
+  document.getElementById("bizImpact").innerHTML=businessImpactHtml(v.business_impact);
+
+  // LEVEL 1 — KPI strip
+  const bi=v.business_impact;
+  document.getElementById("kpiEyebrow").style.display="";
+  const riskCls=bi.highest_risk==="HIGH"?"warn":(bi.highest_risk==="CRITICAL"?"bad":(safe?"good":""));
+  const kpis=[
+    ["Changes Detected", agg.changes, ""],
+    ["Claims Impacted", agg.claims_impacted, agg.claims_impacted?"warn":"good"],
+    ["Highest Risk", bi.highest_risk, riskCls],
+    ["Required Action", bi.recommended_action, safe?"good":"warn"],
+    ["Estimated Effort", bi.estimated_effort, ""],
+    ["Review Time", bi.estimated_review_time, ""],
+  ];
+  document.getElementById("kpiStrip").innerHTML=kpis.map(([k,val,cls])=>
+    `<div class="kpi-card ${cls}"><div class="k">${esc(k)}</div><div class="v">${esc(val)}</div></div>`).join("");
+
+  // LEVEL 2 — Executive Summary  /  LEVEL 3 — Detail
+  document.getElementById("demoExtras").innerHTML=
+    `<div class="level-eyebrow">Executive summary</div>`+
+    lifecycleBannerHtml(v.lifecycle, v.regression_gate)+
+    `<h2 class="sec">Operational Summary <span class="tag">what your lab must do</span></h2>${operationalSummaryHtml(agg)}`+
+    `<div class="level-eyebrow">Detail &amp; evidence</div>`+
+    `<h2 class="sec">Top Impact Changes <span class="tag">preview of Audit</span></h2>${topImpactHtml(v.top_impact)}`+
+    `<h2 class="sec">Governance Status <span class="tag">approval workflow</span></h2><div id="govKpi">${governanceHtml(v.governance)}</div>`+
+    `<h2 class="sec">Audit Reasoning Timeline <span class="tag">click a stage to explore evidence</span></h2>${timelineHtml(v.timeline,"tlDash")}`;
+}
+document.getElementById("ribbonView").onclick=()=>goTab("audit");
+
+// Sample library set loaders
+function loadSomatic(){ clearOptional();
+  loadFile("old_manifest",DEMO.somatic_old,"somatic_old.json");
+  loadFile("new_manifest",DEMO.somatic_new,"somatic_new.json");
+  loadFile("baseline_benchmark",DEMO.benchmark_baseline,"benchmark_baseline.json");
+  loadFile("current_benchmark",DEMO.benchmark_current,"benchmark_current.json");
+  loadFile("old_variants",DEMO.variants_old,"variants_old.json");
+  loadFile("new_variants",DEMO.variants_new,"variants_new.json");
+  files.policy=jsonFile(DEMO.policy,"policy.json");
+  files.approvals=jsonFile(DEMO.approvals,"approvals.json");
+  refresh(); }
+function loadGermline(){ clearOptional();
+  loadFile("old_manifest",DEMO.germline_old,"germline_old.json");
+  loadFile("new_manifest",DEMO.germline_new,"germline_new.json");
+  refresh(); }
+
+document.querySelectorAll("[data-load]").forEach(b=>b.onclick=async()=>{
+  b.dataset.load==="germline"?loadGermline():loadSomatic();
+  await runAnalysis(); goTab("audit");
+});
+document.querySelectorAll("[data-inspect]").forEach(b=>b.onclick=()=>openModal(b.dataset.inspect));
+document.querySelectorAll("[data-download]").forEach(b=>b.onclick=()=>downloadJSON(b.dataset.download));
+document.getElementById("demoBtn").onclick=async()=>{ loadSomatic(); await runAnalysis(); };
+
+function openModal(key){
+  const obj=DEMO[key]; if(!obj) return;
+  document.getElementById("modalTitle").textContent =
+    (obj.assay&&obj.assay.assay_name?obj.assay.assay_name+" — ":"")+"manifest.json";
+  document.getElementById("modalBody").textContent=JSON.stringify(obj,null,2);
+  document.getElementById("modal").classList.add("show");
+}
+document.getElementById("modalClose").onclick=()=>document.getElementById("modal").classList.remove("show");
+document.getElementById("modal").onclick=e=>{ if(e.target.id==="modal") e.currentTarget.classList.remove("show"); };
+function downloadJSON(key){
+  const obj=DEMO[key]; if(!obj) return;
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=(key.startsWith("germline")?"germline":"somatic")+"_manifest.json"; a.click(); URL.revokeObjectURL(a.href);
+}
 
 const pill=(cls,txt)=>`<span class="pill p-${cls}">${txt}</span>`;
 const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-
-function formatChangeValue(v){
-  if(v==null||v==="") return "—";
-  if(typeof v!=="object") return String(v);
-  if(Array.isArray(v)) return JSON.stringify(v,null,2);
-  if("threshold" in v&&"comparator" in v){
-    const unit=v.unit?` ${v.unit}`:"";
-    return `${v.comparator} ${v.threshold}${unit}`.trim();
-  }
-  const keys=Object.keys(v);
-  if(keys.length&&keys.length<=6)
-    return keys.map(k=>{
-      const val=v[k];
-      const shown=(val!=null&&typeof val==="object")?JSON.stringify(val):String(val??"");
-      return `${k}: ${shown}`;
-    }).join(", ");
-  return JSON.stringify(v,null,2);
+const REVAL_LABELS={
+  no_revalidation_required:"No revalidation required", documentation_update:"Documentation update",
+  infrastructure_verification:"Infrastructure verification", qc_verification:"QC verification",
+  classification_concordance_review:"Classification concordance review",
+  targeted_analytical_revalidation:"Targeted analytical revalidation",
+  scope_review_and_targeted_validation:"Scope review and targeted validation",
+  full_or_targeted_analytical_revalidation:"Full or targeted analytical revalidation",
+  full_analytical_revalidation:"Full analytical revalidation",
+};
+const revalLabel=v=>REVAL_LABELS[v]||(v||"").replace(/_/g," ");
+function ruleLabel(rule){
+  if(!rule) return "—";
+  if(rule.startsWith("policy:")) return "Lab policy rule";
+  if(rule.startsWith("builtin:")) return "Built-in default";
+  return rule;
 }
-
-const ICON_SAFE = '<svg class="dico" viewBox="0 0 48 48" fill="none" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4 L40 9 V23 C40 33 33 41 24 44 C15 41 8 33 8 23 V9 Z" fill="rgba(16,185,129,.10)"/><path d="M17 24 l5 5 l10 -12"/></svg>';
-const ICON_WARN = '<svg class="dico" viewBox="0 0 48 48" fill="none" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 L43 39 H5 Z" fill="rgba(245,158,11,.10)"/><line x1="24" y1="19" x2="24" y2="29"/><circle cx="24" cy="34" r="1.6" fill="#F59E0B" stroke="none"/></svg>';
 const capIco=(c)=>({
   changes:'<svg class="cico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h13l-3-3M21 18H8l3 3"/></svg>',
   claims:'<svg class="cico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/></svg>',
@@ -359,78 +1184,80 @@ const capIco=(c)=>({
 })[c];
 
 function renderAudit(data){
-  const safe = data.decision==="SAFE_TO_DEPLOY";
-  const b=data.binder;
+  const safe=data.decision==="SAFE_TO_DEPLOY", b=data.binder, S=data.summary, v=data.view, agg=v.aggregate;
+  const sm=sevMap(b);
+
+  // ---- Executive summary card ----
   const card=document.getElementById("decisionCard");
   card.className="decision-card "+(safe?"safe":"reval");
-  card.innerHTML=`${safe?ICON_SAFE:ICON_WARN}
-    <div style="flex:1">
-      <div class="verdict">${safe?"SAFE TO DEPLOY":"REVALIDATION REQUIRED"}</div>
-      <div class="sub">${data.summary.changes} change(s) · ${data.summary.decisions} decision(s) ·
-      ${data.summary.regressions} regression(s) · ${data.summary.variant_changes} variant change(s)</div>
-      <div class="actions"><button class="ghost" id="pdfBtn">⬇ Export PDF</button></div>
-    </div>`;
+  const claimsList=agg.affected_claims.length?agg.affected_claims.join(", "):"None";
+  card.innerHTML=`${safe?ICON_SAFE:ICON_WARN}<div style="flex:1">
+    <div class="verdict">${safe?"SAFE TO DEPLOY":"REVALIDATION REQUIRED"}</div>
+    <div class="sub" style="font-size:14px;color:var(--text);margin-top:8px"><b>Next step:</b> ${esc(v.recommended_next_step)}</div>
+    <div class="exec-grid">
+      <div class="exec-cell"><div class="k">What changed</div><div class="v">${esc(S.primary_change||"No changes detected")}</div></div>
+      <div class="exec-cell"><div class="k">Highest severity</div><div class="v">${agg.highest_severity?pill(agg.highest_severity,agg.highest_severity.toUpperCase()):"—"}</div></div>
+      <div class="exec-cell"><div class="k">Affected claims</div><div class="v">${esc(claimsList)}</div></div>
+      <div class="exec-cell"><div class="k">Policy</div><div class="v">${esc(agg.policy_name||"Built-in defaults")}</div></div>
+      <div class="exec-cell"><div class="k">Required action</div><div class="v">${esc(S.recommended_action_label||"None")}</div></div>
+      <div class="exec-cell"><div class="k">Benchmark runs</div><div class="v">${agg.total_benchmark_runs}</div></div>
+      <div class="exec-cell"><div class="k">Overall effort</div><div class="v">${esc(agg.highest_effort)}</div></div>
+    </div>
+    <div class="actions"><button class="ghost" id="pdfBtn">⬇ Export Audit PDF</button></div></div>`;
   document.getElementById("pdfBtn").onclick=exportPdf;
 
-  // Core engine capability cards
-  const revalCount = (b.decisions||[]).filter(d=>!NO_REVAL.has(d.decision_type)).length;
-  const cap=[
-    ["teal","changes","Changes Detected",data.summary.changes],
-    ["violet","claims","Claims Impacted",data.summary.affected_claims.length],
-    ["amber","reval","Revalidations Required",revalCount],
-    ["red","reg","Regressions Detected",data.summary.regressions],
-  ];
-  const cr=document.getElementById("capRow");
-  cr.style.display="grid";
-  cr.innerHTML=cap.map(([tone,ic,k,n])=>`<div class="cap ${tone}">${capIco(ic)}
-     <div><div class="n">${n}</div><div class="k">${k}</div></div></div>`).join("");
+  // ---- stat row ----
+  const cap=[["teal","changes","Changes Detected",agg.changes],
+    ["violet","claims","Claims Impacted",agg.claims_impacted],
+    ["amber","reval","Revalidation Actions",agg.revalidation_actions],
+    ["red","reg","Regressions Detected",S.regressions]];
+  const cr=document.getElementById("capRow"); cr.style.display="grid";
+  cr.innerHTML=cap.map(([tone,ic,k,n])=>`<div class="cap ${tone}">${capIco(ic)}<div><div class="n">${n}</div><div class="k">${k}</div></div></div>`).join("");
 
-  const changeRows=b.changes.map(c=>`<tr><td>${esc(c.change_type)}</td><td>${esc(c.component_identity)}</td>
-    <td>${esc(formatChangeValue(c.old_value))}</td><td>${esc(formatChangeValue(c.new_value))}</td></tr>`).join("");
-  const impactRows=b.impacts.map(i=>`<tr><td>${esc(i.change_id)}</td><td>${pill(i.impact_domain,i.impact_domain)}</td>
-    <td>${esc(i.rationale)}</td></tr>`).join("");
-  const decRows=b.decisions.map(d=>`<tr><td>${esc(d.decision_type)}</td>
-    <td>${esc((d.affected_claims||[]).join(", ")||"—")}</td><td>${esc(d.rationale)}</td></tr>`).join("");
+  // ---- detail tables ----
+  const sevCell=cid=>{const s=sm[cid]; if(!s) return "—";
+    const mag=(s.version_magnitude&&s.version_magnitude!=="none")?` <span class="muted">(${s.version_magnitude})</span>`:"";
+    return pill(s.severity,s.severity.toUpperCase())+mag;};
+  const changeRows=b.changes.map(c=>`<tr><td>${esc(c.change_type)}</td><td>${esc(c.component_identity)}</td><td>${sevCell(c.change_id)}</td><td>${esc(c.old_value)}</td><td>${esc(c.new_value)}</td></tr>`).join("");
+  const impactRows=b.impacts.map(i=>`<tr><td>${esc(i.change_id)}</td><td>${pill(i.impact_domain,i.impact_domain)}</td><td>${esc(i.rationale)}</td></tr>`).join("");
+
+  const chain=v.decisions.map(chainCardHtml).join("");
+  const orphan=(b.orphan_approvals||[]).length
+    ? `<div class="approval-warn" style="margin-top:10px;font-size:12.5px">⚠ Approvals reference changes not present in this comparison: ${esc(b.orphan_approvals.join(", "))}</div>` : "";
 
   document.getElementById("auditBody").innerHTML=`
+    ${lifecycleBannerHtml(v.lifecycle, v.regression_gate)}
+    <h2 class="sec">Audit Reasoning Timeline <span class="tag">click a stage to replay evidence</span></h2>${timelineHtml(v.timeline,"tlAudit")}
+    <h2 class="sec">Operational Summary <span class="tag">what your lab needs to do</span></h2>${operationalSummaryHtml(agg)}
+    <h2 class="sec">Governance Status <span class="tag">approval workflow</span></h2>${governanceHtml(v.governance)}
+    <h2 class="sec">Audit Metadata <span class="tag">artifact provenance</span></h2>${auditMetadataHtml(v.audit_metadata)}
+    <h2 class="sec">Decision Chain <span class="tag">change → severity → rule → action → approval</span></h2>
+    <div class="chain">${v.decisions.length?chain:'<div class="empty">No revalidation decisions (no changes detected).</div>'}</div>
+    ${orphan}
     <h2 class="sec">Change Summary</h2>
-    <div class="panel">${b.changes.length?`<table><tr><th>Type</th><th>Identity</th><th>Old</th><th>New</th></tr>${changeRows}</table>`:'<div class="empty">No changes detected.</div>'}</div>
-    <h2 class="sec">Impact Summary</h2>
-    <div class="panel">${b.impacts.length?`<table><tr><th>Change</th><th>Domain</th><th>Rationale</th></tr>${impactRows}</table>`:'<div class="empty">No impacts.</div>'}</div>
-    <h2 class="sec">Decision Rationale</h2>
-    <div class="panel">${b.decisions.length?`<table><tr><th>Decision</th><th>Affected Claims</th><th>Rationale</th></tr>${decRows}</table>`:'<div class="empty">No revalidation decisions.</div>'}</div>`;
+    <div class="panel">${b.changes.length?`<table><tr><th>Type</th><th>Identity</th><th>Severity</th><th>Old</th><th>New</th></tr>${changeRows}</table>`:'<div class="empty">No changes detected.</div>'}</div>
+    <h2 class="sec">Impact Analysis</h2>
+    <div class="panel">${b.impacts.length?`<table><tr><th>Change</th><th>Domain</th><th>Rationale</th></tr>${impactRows}</table>`:'<div class="empty">No impacts.</div>'}</div>`;
 }
 
 let regChart=null;
 function renderRegression(b){
   const body=document.getElementById("regBody");
-  if(!b.regression || !b.regression.length){
-    body.className="empty"; body.textContent="No regression data. Provide baseline + current benchmark JSON.";
-    return;
-  }
+  if(!b.regression || !b.regression.length){ body.className="empty"; body.textContent="No regression data. Provide baseline + current benchmark JSON."; return; }
   body.className="";
   body.innerHTML=`<div class="chart-wrap"><canvas id="regChart" height="120"></canvas></div>
-    <div class="panel"><table id="regTable"><tr><th>Metric</th><th>Baseline</th><th>Current</th><th>Δ</th><th>Status</th><th>Rationale</th></tr>
-    ${b.regression.map(m=>`<tr><td>${esc(m.metric)}</td><td>${m.old_value.toFixed(4)}</td>
-      <td>${m.new_value.toFixed(4)}</td><td>${(m.delta>=0?'+':'')+m.delta.toFixed(4)}</td>
-      <td>${pill(m.status,m.status.replace(/_/g,' '))}</td><td>${esc(m.rationale)}</td></tr>`).join("")}</table></div>`;
-  const labels=b.regression.map(m=>m.metric);
-  const ctx=document.getElementById("regChart");
-  if(regChart) regChart.destroy();
-  regChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[
+    <div class="panel"><table><tr><th>Metric</th><th>Baseline</th><th>Current</th><th>Δ</th><th>Status</th><th>Rationale</th></tr>
+    ${b.regression.map(m=>`<tr><td>${esc(m.metric)}</td><td>${m.old_value.toFixed(4)}</td><td>${m.new_value.toFixed(4)}</td><td>${(m.delta>=0?'+':'')+m.delta.toFixed(4)}</td><td>${pill(m.status,m.status.replace(/_/g,' '))}</td><td>${esc(m.rationale)}</td></tr>`).join("")}</table></div>`;
+  const ctx=document.getElementById("regChart"); if(regChart) regChart.destroy();
+  regChart=new Chart(ctx,{type:'bar',data:{labels:b.regression.map(m=>m.metric),datasets:[
     {label:'Baseline',data:b.regression.map(m=>m.old_value),backgroundColor:'#334a72'},
-    {label:'Current',data:b.regression.map(m=>m.new_value),
-      backgroundColor:b.regression.map(m=>m.status==='regression_detected'?'#EF4444':(m.status==='improved'?'#10B981':'#06B6D4'))}
-  ]},options:{responsive:true,scales:{y:{min:0,max:1,grid:{color:'#26334f'},ticks:{color:'#94A3B8'}},
-    x:{grid:{display:false},ticks:{color:'#94A3B8'}}},plugins:{legend:{labels:{color:'#E2E8F0'}}}}});
+    {label:'Current',data:b.regression.map(m=>m.new_value),backgroundColor:b.regression.map(m=>m.status==='regression_detected'?'#EF4444':(m.status==='improved'?'#10B981':'#06B6D4'))}
+  ]},options:{responsive:true,scales:{y:{min:0,max:1,grid:{color:'#26334f'},ticks:{color:'#94A3B8'}},x:{grid:{display:false},ticks:{color:'#94A3B8'}}},plugins:{legend:{labels:{color:'#E2E8F0'}}}}});
 }
 
 function renderVariants(deltas){
   const body=document.getElementById("variantBody"), filt=document.getElementById("variantFilters");
-  if(!deltas || !deltas.length){
-    body.className="empty"; body.textContent="No variant comparison. Provide old + new reportable variants JSON.";
-    filt.style.display="none"; return;
-  }
+  if(!deltas || !deltas.length){ body.className="empty"; body.textContent="No variant comparison. Provide old + new reportable variants JSON."; filt.style.display="none"; return; }
   filt.style.display="flex"; body.className="";
   const genes=[...new Set(deltas.map(d=>d.gene))].sort();
   const classes=[...new Set(deltas.flatMap(d=>[d.old_classification,d.new_classification]).filter(Boolean))];
@@ -438,18 +1265,11 @@ function renderVariants(deltas){
   gSel.innerHTML='<option value="">All genes</option>'+genes.map(g=>`<option>${esc(g)}</option>`).join("");
   cSel.innerHTML='<option value="">All classifications</option>'+classes.map(c=>`<option>${esc(c)}</option>`).join("");
   const draw=()=>{
-    const q=document.getElementById("vSearch").value.toLowerCase();
-    const g=gSel.value, c=cSel.value, t=document.getElementById("vType").value;
-    const rows=deltas.filter(d=>
-      (!q || (d.gene+" "+d.variant).toLowerCase().includes(q)) &&
-      (!g || d.gene===g) && (!t || d.change_type===t) &&
-      (!c || d.old_classification===c || d.new_classification===c));
-    body.innerHTML = rows.length ? rows.map(d=>{
-      const sign=d.change_type==="added"?"+":d.change_type==="removed"?"−":"~";
-      return `<div class="diff-row ${d.change_type}"><div class="sign">${sign}</div>
-        <div><b>${esc(d.gene)}</b> ${esc(d.variant)} ${pill(d.change_type,d.change_type.replace(/_/g,' '))}
-        <div class="muted" style="margin-top:4px">${esc(d.explanation)}</div></div></div>`;
-    }).join("") : '<div class="empty">No variants match the filters.</div>';
+    const q=document.getElementById("vSearch").value.toLowerCase(), g=gSel.value, c=cSel.value, t=document.getElementById("vType").value;
+    const rows=deltas.filter(d=>(!q||(d.gene+" "+d.variant).toLowerCase().includes(q))&&(!g||d.gene===g)&&(!t||d.change_type===t)&&(!c||d.old_classification===c||d.new_classification===c));
+    body.innerHTML=rows.length?rows.map(d=>{const sign=d.change_type==="added"?"+":d.change_type==="removed"?"−":"~";
+      return `<div class="diff-row ${d.change_type}"><div class="sign">${sign}</div><div><b>${esc(d.gene)}</b> ${esc(d.variant)} ${pill(d.change_type,d.change_type.replace(/_/g,' '))}<div class="muted" style="margin-top:4px">${esc(d.explanation)}</div></div></div>`;
+    }).join(""):'<div class="empty">No variants match the filters.</div>';
   };
   document.getElementById("vSearch").oninput=draw;
   [gSel,cSel,document.getElementById("vType")].forEach(el=>el.onchange=draw);
@@ -458,12 +1278,255 @@ function renderVariants(deltas){
 
 async function exportPdf(){
   if(!lastBinder) return;
-  const r=await fetch("/api/export-pdf",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(lastBinder)});
+  const r=await fetch("/api/export-pdf",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(lastBinder)});
   if(!r.ok){alert("PDF export failed");return;}
-  const blob=await r.blob(), url=URL.createObjectURL(blob), a=document.createElement("a");
-  a.href=url; a.download="assaytrace_binder.pdf"; a.click(); URL.revokeObjectURL(url);
+  const blob=await r.blob(), a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="assaytrace_binder.pdf"; a.click(); URL.revokeObjectURL(a.href);
 }
+
+// Auto-run demo: open page -> see analysis -> understand value.
+// ---- Policy Management (SOP governance simulation; no auth) ----
+let POLICIES = [];
+const POL_SPECS = {};                       // family -> grouped spec dict (real, hashable)
+const polFamily = n => String(n||"").replace(/-v\d+$/,"");
+function initPolicies(){
+  POLICIES = (DEMO.policy_registry||[]).map(p=>({...p, family: p.family || polFamily(p.name)}));
+  Object.assign(POL_SPECS, DEMO.policy_specs||{});
+  renderPolicies();
+}
+async function derivePolicy(spec){
+  const r=await fetch("/api/policy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(spec)});
+  return r.json();
+}
+function nextVersion(family){
+  const v=POLICIES.filter(p=>p.family===family).map(p=>parseInt(String(p.version).replace(/\D/g,""))||1);
+  return "v"+((v.length?Math.max(...v):0)+1);
+}
+function specKey(family){ return family.toLowerCase().replace(/\s+sop$/,"-sop").replace(/\s+/g,"-"); }
+function renderPolicies(){
+  const body=document.getElementById("policyBody");
+  if(!POLICIES.length){ body.className="empty"; body.textContent="No policies."; return; }
+  body.className="";
+  // Governance metrics (Active / Draft / Archived / Retired SOPs + assays governed).
+  const m=document.getElementById("polMetrics");
+  const cnt=s=>POLICIES.filter(p=>p.status===s).length;
+  const assaysGoverned=new Set(POLICIES.filter(p=>p.status==='active').flatMap(p=>p.assays_using||[])).size;
+  m.innerHTML=[
+    ["Active SOPs",cnt("active"),"good"],["Draft SOPs",cnt("draft"),"warn"],
+    ["Archived SOPs",cnt("archived"),""],["Retired SOPs",cnt("retired"),""],
+    ["Assays Governed",assaysGoverned,""],
+  ].map(([lbl,n,cls])=>`<div class="pf-kpi ${cls&&n?cls:''}"><div class="n">${n}</div><div class="k">${lbl}</div></div>`).join("");
+
+  const families=[...new Set(POLICIES.map(p=>p.family))];
+  body.innerHTML=families.map(fam=>{
+    const versions=POLICIES.filter(p=>p.family===fam)
+      .sort((a,b)=>String(a.version).localeCompare(String(b.version),undefined,{numeric:true}));
+    const hist=versions.map((p,i)=>`${i?'<span class="ar">→</span>':''}<span class="v ${p.status}">${esc(p.version)}${p.active_since?` <span style="opacity:.7">(${esc(p.active_since)})</span>`:''}${p.status==='active'?' ✓':(p.status==='draft'?' ✎':'')}</span>`).join("");
+    const assayType=versions[0].assay_type||"any";
+    const allAssays=[...new Set(versions.flatMap(v=>v.assays_using||[]))];
+    const rows=versions.map(p=>{
+      const idx=POLICIES.indexOf(p);
+      const meta=(p.owner)?`<div class="pol-meta-grid">
+          <div>Owner <b>${esc(p.owner)}</b></div>
+          <div>Created <b>${esc(p.created||'—')}</b></div>
+          <div>Modified <b>${esc(p.last_modified||'—')}</b></div>
+          <div>Active since <b>${esc(p.active_since||'—')}</b></div>
+          <div>Decisions <b>${p.decisions_generated??'—'}</b></div>
+          <div>Assays using <b>${(p.assays_using||[]).length}</b></div>
+        </div>`:"";
+      return `<div class="pol-row">
+        <div><b>${esc(p.version)}</b></div>
+        <div><div class="meta">${esc(assayType)} · ${p.rule_count} rule(s) · <span class="pol-badge ${p.status}">${esc(p.status)}</span></div>
+          ${p.description?`<div class="muted" style="font-size:11.5px;margin-top:3px">${esc(p.description)}</div>`:''}
+          <div class="hash">${esc(p.hash)}</div>${meta}
+          <div id="polDetail${idx}" class="sop-detail" style="display:none"></div></div>
+        <div class="pol-acts">
+          <button class="ghost" onclick='polDetail(${idx})'>Details</button>
+          ${p.status!=='active'?`<button class="ghost" onclick="polActivate(${idx})">Activate</button>`:''}
+          ${p.status==='active'?`<button class="ghost" onclick="polArchive(${idx})">Archive</button>`:''}
+          ${p.status!=='retired'?`<button class="ghost" onclick="polRetire(${idx})">Retire</button>`:''}
+          <button class="ghost" onclick="polDuplicate('${esc(fam)}')">Clone</button>
+          <button class="ghost" onclick="polVersion('${esc(fam)}')">New Version</button>
+          <button class="ghost" onclick='polExport(${JSON.stringify(p)})'>Export</button>
+        </div></div>`;
+    }).join("");
+    const assayImpact=allAssays.length?`<div class="muted" style="font-size:11.5px;margin-top:8px">
+      <b style="color:var(--text)">Governed Assays (${allAssays.length}):</b> ${allAssays.map(esc).join(", ")}</div>`:"";
+    const canCompare=(DEMO.policy_versions||{})[fam];
+    return `<div class="pol-family"><h3>${esc(fam)}</h3>
+      <div class="muted" style="font-size:11px;margin-bottom:2px">Version History</div>
+      <div class="pol-hist">${hist}</div>${rows}${assayImpact}
+      ${canCompare?`<div style="margin-top:10px"><button class="ghost" onclick="polCompareFamily('${esc(fam)}')">Compare Versions</button></div>`:''}
+    </div>`;
+  }).join("");
+}
+function _ruleInventory(fam, version){
+  // Prefer a version-specific spec; fall back to the family base spec.
+  const vers=(DEMO.policy_versions||{})[fam];
+  let spec=(vers && vers[version]) || POL_SPECS[specKey(fam)] || POL_SPECS[fam];
+  if(!spec) return ["(rule inventory available for editable specs)"];
+  const reserved=new Set(["name","assay_type","version","status"]);
+  const rules=[];
+  if(Array.isArray(spec.rules)){
+    spec.rules.forEach(r=>rules.push(`${esc(r.rule_id||'rule')} → ${esc(r.action||'')}`));
+  }else{
+    Object.entries(spec).forEach(([target,body])=>{
+      if(reserved.has(target)||typeof body!=='object') return;
+      Object.entries(body).forEach(([mag,def])=>rules.push(`${esc(target)}:${esc(mag)} → ${esc((def||{}).action||'')}`));
+    });
+  }
+  return rules.length?rules:["(no rules)"];
+}
+function polDetail(i){
+  const p=POLICIES[i], el=document.getElementById("polDetail"+i);
+  if(el.style.display!=="none"){ el.style.display="none"; return; }
+  const fam=POLICIES.filter(x=>x.family===p.family)
+    .sort((a,b)=>String(a.version).localeCompare(String(b.version),undefined,{numeric:true}));
+  const lineage=fam.map(x=>`${esc(x.version)} (${esc(x.status)})`).join(" → ");
+  const history=fam.map(x=>`<li><b>${esc(x.version)}</b> — ${esc(x.status)}`+
+    `${x.active_since?` · effective ${esc(x.active_since)}`:''}`+
+    `${x.last_modified?` · updated ${esc(x.last_modified)}`:''}</li>`).join("");
+  const rules=_ruleInventory(p.family, p.version).map(r=>`<li>${r}</li>`).join("");
+  el.innerHTML=`<div class="sop-detail-box">
+    <div class="sop-d-title">SOP Detail — ${esc(p.family)} ${esc(p.version)}</div>
+    ${p.description?`<div class="muted" style="font-size:12px;margin-bottom:8px">${esc(p.description)}</div>`:''}
+    <div class="pol-meta-grid">
+      <div>Status <b>${esc(p.status)}</b></div><div>Owner <b>${esc(p.owner||'—')}</b></div>
+      <div>Effective date <b>${esc(p.active_since||'—')}</b></div>
+      <div>Last updated <b>${esc(p.last_modified||'—')}</b></div>
+      <div>Affected decisions <b>${p.decisions_generated??'—'}</b></div>
+      <div>Assays governed <b>${(p.assays_using||[]).length}</b></div>
+    </div>
+    <div style="margin-top:8px"><b style="font-size:12px">Rule inventory (${rules?_ruleInventory(p.family,p.version).length:0})</b>
+      <ul style="margin:5px 0 0;padding-left:18px;font-family:var(--mono);font-size:11.5px;color:#cbd5e1">${rules}</ul></div>
+    <div style="margin-top:8px"><b style="font-size:12px">Change history</b>
+      <ul style="margin:5px 0 0;padding-left:18px;font-size:12px;color:#cbd5e1">${history}</ul></div>
+    <div style="margin-top:8px;font-size:12px"><b>Version lineage:</b> <span class="muted">${lineage}</span></div>
+    <div style="margin-top:6px;font-size:12px"><b>Governed Assays:</b> <span class="muted">${(p.assays_using||[]).map(esc).join(", ")||'none'}</span></div>
+    <div style="margin-top:6px;font-size:11px" class="hash">${esc(p.hash)}</div>
+  </div>`;
+  el.style.display="";
+}
+async function polCompareFamily(fam){
+  const versions=(DEMO.policy_versions||{})[fam]; if(!versions) return;
+  const keys=Object.keys(versions); const a=versions[keys[0]], b=versions[keys[keys.length-1]];
+  const r=await fetch("/api/policy-compare",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({base:a,candidate:b})});
+  const d=await r.json(); if(d.error) return alert(d.error);
+  const sec=l=>l.length?l.map(x=>`<li>${esc(x.rule_id)}${x.action?` → <b>${esc(x.action)}</b>`:''}</li>`).join(""):"<li class='muted'>none</li>";
+  const mod=d.modified_rules.length?d.modified_rules.map(m=>`<li>${esc(m.rule_id)}: ${m.changes.map(c=>`${esc(c.field)} <span class="muted">${esc(c.from)}</span> → <b>${esc(c.to)}</b>`).join("; ")}</li>`).join(""):"<li class='muted'>none</li>";
+  document.getElementById("policyCompare").innerHTML=`<div class="pol-family">
+    <h3>${esc(fam)}: ${esc(d.base.version)} vs ${esc(d.candidate.version)} <button class="ghost" style="float:right;font-size:11px" onclick="document.getElementById('policyCompare').innerHTML=''">✕ Close</button></h3>
+    <div class="muted" style="font-size:12px;margin-bottom:8px">Decision-logic changed: <b style="color:${d.decision_logic_changed?'var(--amber)':'var(--green)'}">${d.decision_logic_changed?'Yes':'No'}</b></div>
+    <div class="exec-grid">
+      <div class="exec-cell"><div class="k">Added Rules</div><div class="v"><ul style="margin:4px 0 0;padding-left:16px;font-size:12px;font-weight:500">${sec(d.added_rules)}</ul></div></div>
+      <div class="exec-cell"><div class="k">Removed Rules</div><div class="v"><ul style="margin:4px 0 0;padding-left:16px;font-size:12px;font-weight:500">${sec(d.removed_rules)}</ul></div></div>
+      <div class="exec-cell"><div class="k">Modified Rules</div><div class="v"><ul style="margin:4px 0 0;padding-left:16px;font-size:12px;font-weight:500">${mod}</ul></div></div>
+    </div></div>`;
+  document.getElementById("policyCompare").scrollIntoView({behavior:"smooth"});
+}
+function polArchive(i){ POLICIES[i].status='archived'; renderPolicies(); }
+function polExport(p){
+  const blob=new Blob([JSON.stringify(p,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`${p.name}-${p.version}.json`; a.click(); URL.revokeObjectURL(a.href);
+}
+function polActivate(i){
+  const fam=POLICIES[i].family;
+  POLICIES.forEach(p=>{ if(p.family===fam && p.status==='active') p.status='archived'; });
+  POLICIES[i].status='active'; renderPolicies();
+}
+function polRetire(i){ POLICIES[i].status='retired'; renderPolicies(); }
+async function polDuplicate(fam){
+  const base=POL_SPECS[specKey(fam)]||POL_SPECS[fam]; if(!base) return alert("No editable spec for this policy.");
+  const newFam=fam+" (copy)", spec=JSON.parse(JSON.stringify(base)); spec.name=specKey(newFam); spec.version="v1";
+  const d=await derivePolicy(spec); if(d.error) return alert(d.error);
+  POL_SPECS[specKey(newFam)]=spec; POLICIES.push({...d, family:newFam, status:'draft'}); renderPolicies();
+}
+async function polVersion(fam){
+  const base=POL_SPECS[specKey(fam)]||POL_SPECS[fam]; if(!base) return alert("No editable spec for this policy.");
+  const nv=nextVersion(fam), spec=JSON.parse(JSON.stringify(base)); spec.name=specKey(fam); spec.version=nv;
+  const d=await derivePolicy(spec); if(d.error) return alert(d.error);
+  POLICIES.push({...d, family:fam, status:'draft'}); renderPolicies();
+}
+document.getElementById("polUpload").onclick=()=>{
+  const inp=document.createElement("input"); inp.type="file"; inp.accept=".json";
+  inp.onchange=async()=>{ try{
+    const spec=JSON.parse(await inp.files[0].text());
+    const d=await derivePolicy(spec); if(d.error) return alert(d.error);
+    POL_SPECS[specKey(d.name)]=spec;
+    POLICIES.push({...d, family:polFamily(d.name), status:'draft'}); renderPolicies();
+  }catch(e){ alert("Invalid policy JSON."); } };
+  inp.click();
+};
+document.getElementById("polCreate").onclick=async()=>{
+  const name=(prompt("New policy name (e.g. custom-sop):")||"").trim(); if(!name) return;
+  const assay=(prompt("Assay type (somatic / germline):","somatic")||"somatic").trim();
+  const seed=POL_SPECS["somatic-sop"]||Object.values(POL_SPECS)[0]||{};
+  const spec=JSON.parse(JSON.stringify(seed)); spec.name=name; spec.version="v1"; spec.assay_type=assay;
+  const d=await derivePolicy(spec); if(d.error) return alert(d.error);
+  POL_SPECS[name]=spec; POLICIES.push({...d, family:polFamily(name), status:'draft'}); renderPolicies();
+};
+
+// ---- Portfolio (multi-assay governance dashboard) ----
+let PORTFOLIO_LOADED=false;
+async function loadPortfolio(){
+  if(PORTFOLIO_LOADED) return;
+  try{
+    const r=await fetch("/api/portfolio"); const p=await r.json();
+    renderPortfolio(p); PORTFOLIO_LOADED=true;
+  }catch(e){ document.getElementById("pfTable").innerHTML=`<div class="empty">Could not load portfolio.</div>`; }
+}
+function stClass(s){ return "st-"+String(s).toLowerCase().replace(/\s+/g,"-"); }
+let PF_DATA=null, PF_FILTER="All";
+function renderPortfolio(p){
+  PF_DATA=p;
+  const k=p.kpis;
+  // Enterprise summary line (real counts, communicates multi-assay governance).
+  document.getElementById("pfSummary").innerHTML=
+    `<b>${k.total_assays}</b> assays governed · <b>${k.under_review}</b> under active review · `+
+    `<b>${k.revalidation_required}</b> require revalidation · <b>${k.blocked}</b> blocked`;
+  const kpis=[
+    ["total_assays","Total Assays",""],["approved","Approved","good"],
+    ["under_review","Under Review",""],["draft","Draft",""],
+    ["blocked","Blocked","bad"],["high_risk","High Risk","warn"],
+  ];
+  document.getElementById("pfKpis").innerHTML=kpis.map(([key,lbl,cls])=>
+    `<div class="pf-kpi ${cls&&k[key]?cls:''}"><div class="n">${k[key]}</div><div class="k">${lbl}</div></div>`).join("");
+  renderPfTable();
+
+  const rd=p.risk_distribution, total=Math.max(1,Object.values(rd).reduce((a,b)=>a+b,0));
+  const colors={CRITICAL:"var(--red)",HIGH:"var(--amber)",MEDIUM:"var(--cyan)",LOW:"#64748b",NONE:"#475569"};
+  document.getElementById("pfRisk").innerHTML=Object.entries(rd).map(([lvl,ct])=>
+    `<div class="risk-row"><div class="lbl">${lvl}</div>
+     <div class="track"><div class="bar" style="width:${Math.round(ct/total*100)}%;background:${colors[lvl]||'#475569'}"></div></div>
+     <div class="ct">${ct}</div></div>`).join("");
+  document.getElementById("pfTimeline").innerHTML=p.timeline.map(t=>
+    `<div class="pf-tl"><div class="d">${esc(t.date)}</div><div>${esc(t.event)}</div></div>`).join("");
+}
+function renderPfTable(){
+  if(!PF_DATA) return;
+  const rowsData=PF_DATA.assays.filter(a=>PF_FILTER==="All"||a.status===PF_FILTER);
+  const rows=rowsData.map(a=>`<tr>
+    <td><b>${esc(a.assay)}</b></td>
+    <td><span class="st-pill ${stClass(a.status)}">${esc(a.status)}</span></td>
+    <td>${a.risk?pill(a.risk.toLowerCase(),a.risk):"—"}</td>
+    <td>${esc(a.required_action)}</td>
+    <td>${a.claims_impacted}</td>
+    <td>${esc(a.last_review)}</td>
+    <td>${esc(a.policy)} <span class="muted">${esc(a.policy_version)}</span></td></tr>`).join("");
+  document.getElementById("pfTable").innerHTML= rowsData.length
+    ? `<table class="pf-table"><tr><th>Assay Name</th><th>Status</th><th>Risk Level</th><th>Required Action</th>
+       <th>Claims Impacted</th><th>Last Review</th><th>Policy Version</th></tr>${rows}</table>`
+    : `<div class="empty">No assays match "${esc(PF_FILTER)}".</div>`;
+}
+document.getElementById("pfFilters").addEventListener("click", e=>{
+  const btn=e.target.closest(".pf-filter"); if(!btn) return;
+  document.querySelectorAll("#pfFilters .pf-filter").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active"); PF_FILTER=btn.dataset.filter; renderPfTable();
+});
+
+window.addEventListener("DOMContentLoaded", ()=>{ initPolicies(); loadSomatic(); runAnalysis(); });
 </script>
 </body>
 </html>

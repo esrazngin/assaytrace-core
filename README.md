@@ -1,138 +1,234 @@
-# AssayTrace — Manifest Schema (Step 1)
+# AssayTrace
 
-The **manifest** is the canonical identity card of a clinical NGS assay
-pipeline. Every later AssayTrace module consumes it:
+**Deterministic change-control & revalidation governance for clinical NGS laboratories.**
 
-1. **Change Detection Engine** — diff two manifests.
-2. **Change Impact Graph** — propagate changes through component dependencies.
-3. **Assay Claim Impact Mapping** — find which validated claims a change can perturb.
-4. **Revalidation Decision Engine** — decide *whether* and *at what scope* revalidation is required.
-5. **Audit Report Generator** — emit the change-control record.
+AssayTrace tells a laboratory *what changed* between two versions of a clinical
+next-generation-sequencing (NGS) assay, *which validated claims* the change can
+affect, *what revalidation* the laboratory's own SOP requires, and produces an
+*audit-ready binder* documenting the decision — all through a transparent,
+rule-driven engine with **no AI/LLM in the decision path**.
 
-This package implements only the schema (Step 1), but is designed so the four
-downstream modules need **no schema changes** to be built on top of it.
+> AssayTrace is a governance and documentation platform. It does **not** run
+> pipelines, call or interpret variants, or make clinical decisions.
 
-> **Scope / disclaimer.** This is decision-support tooling for laboratory
-> quality processes. It is **not** a medical device and does **not** make
-> clinical determinations or constitute CLIA/CAP/IVDR certification. Final
-> validation decisions rest with the laboratory director.
+---
 
-## Install
+## 1. What AssayTrace is
 
-```bash
-pip install -e .          # or: pip install pydantic pyyaml
-pip install -e ".[dev]"   # for pytest / mypy
+A change-control and revalidation decision platform for laboratories running
+clinical NGS assays under CLIA / CAP / IVDR. It compares two **assay manifests**
+(declarative descriptions of an assay version) and produces a defensible,
+fully-traceable revalidation decision plus an audit binder (HTML and PDF).
+
+## 2. The problem it solves
+
+Clinical NGS assays change constantly: a variant caller is bumped a patch
+version, a reference genome is updated, an annotation database is refreshed, a QC
+threshold is loosened, a container digest changes. Each change *may* require
+revalidation — or may not. Today that judgement lives in spreadsheets, email
+threads, and senior bioinformaticians' heads. It is slow, inconsistent, and hard
+to defend in an audit.
+
+AssayTrace makes that judgement **explicit, deterministic, and auditable**: the
+same inputs always produce the same decision, every decision names the rule that
+produced it, and the result is captured in a citable binder with content hashes.
+
+## 3. Why revalidation is difficult
+
+- A single change can touch multiple validated claims (e.g. a VAF-threshold
+  change affects SNV and INDEL sensitivity and limit of detection).
+- Different laboratories legitimately handle the same change differently —
+  revalidation scope is a matter of SOP, not universal truth.
+- Evidence of "no performance regression" must be tied to the decision, not filed
+  separately.
+- Auditors need to reconstruct *why* a decision was made months later.
+
+## 4. Core concepts
+
+- **Manifest diffing** — deterministic comparison of two assay manifests into a
+  sorted, stable set of typed change records.
+- **Claim dependency mapping** — each change is mapped to the validated analytical
+  claims it can perturb, via explicit dependency wiring and externalized rule
+  tables (including a QC-parameter → performance-characteristic → claim mapping).
+- **Impact classification** — every change is classified into a technical impact
+  domain with a traceable rationale.
+- **Policy engine** — laboratory SOPs (versioned, hashed) drive the revalidation
+  decision; the engine consults policy first and falls back to documented
+  built-in defaults.
+- **Approval workflow** — deviations carry dispositions (approved, approved with
+  conditions, rejected, pending) with reviewer, date, conditions, and history.
+- **Audit binder** — an HTML/PDF artifact with executive summary, business impact,
+  approval summary, audit metadata, decision chain, and content hashes.
+- **Regression gate** — benchmark comparisons are turned into a deterministic gate
+  (PASS / MANUAL_REVIEW / BLOCKED) that can block finalization.
+- **Portfolio governance** — many assays governed at once, each summarized from a
+  real binder, with KPIs, risk distribution, and activity.
+
+## 5. Example workflow
+
+```
+Manifest A (current validated assay)
+        |
+        v
+Manifest B (proposed new version)
+        |
+        v
+Impact Classification   (what technical domain each change touches)
+        |
+        v
+Claims Mapping          (which validated claims are affected)
+        |
+        v
+Policy Evaluation       (laboratory SOP decides the revalidation scope)
+        |
+        v
+Decision                (per-change revalidation type + rationale + rule id)
+        |
+        v
+Audit Binder            (HTML / PDF, hashed, finalizable when clean)
 ```
 
-## Quickstart
+## 6. Architecture overview
+
+A pipeline of small, deterministic, frozen-model layers — each is stateless and
+emits sorted, reproducible output:
+
+```
+diff -> impact -> claims_impact -> severity -> decision
+                                                  |
+        policy ------------------------------------/
+                                                  |
+   approval . regression(gate) . reporting(binder/pdf/presentation) . web
+```
+
+- Models are immutable (Pydantic v2, `frozen=True`, `extra="forbid"`).
+- Rule tables are externalized data, not code branches.
+- The shared `reporting/presentation.py` feeds both the web UI and the PDF, so
+  they cannot drift.
+- Benchmark packages enforce internal consistency (F1 must match precision/recall).
+
+## 7. Screenshots
+
+Run the app locally (below) and open `http://127.0.0.1:5000`. Key views:
+
+- **Dashboard** — Level 1 KPI strip (Changes, Claims Impacted, Highest Risk,
+  Required Action, Effort, Review Time), Level 2 executive summary (business
+  impact, recommended next step, regression/approval status), Level 3 detail
+  (top impact, timeline, governance, decision chain).
+- **Portfolio** — multi-assay table with status / risk / required action / claims
+  impacted / policy version, KPIs, filters, risk distribution, and activity.
+- **Policies** — SOP library with version history, lifecycle actions, SOP detail
+  (rule inventory, lineage, governed assays, hash), and version comparison.
+- **Audit & Decision** — binder lifecycle banner, reasoning timeline, decision
+  chain, audit metadata.
+- **PDF binder** — `sample_audit_binder.pdf` (executive summary -> business impact
+  -> approval summary -> audit metadata; DRAFT/UNDER REVIEW watermark).
+
+## 8. Quick start
+
+```bash
+pip install -e .            # or: pip install pydantic pyyaml flask fpdf2 pypdf pytest
+python -m assaytrace.web.app
+# open http://127.0.0.1:5000  (the demo auto-runs an analysis on load)
+```
+
+## 9. Running locally
+
+The web app loads a built-in somatic demo automatically (it POSTs to
+`/api/analyze`). Endpoints include `/api/analyze`, `/api/portfolio`,
+`/api/policy`, and `/api/policy-compare`. To generate a binder programmatically:
 
 ```python
-from assaytrace import load_manifest
-
-m = load_manifest("examples/manifest.json")
-print(m.content_hash())          # stable assay-identity hash
-print(m.iter_components())       # uniform (identity, version) list
+from examples.build import build
+from assaytrace.reporting import build_binder, render_pdf
+binder = build_binder(build(), build())          # old, new manifests
+render_pdf(binder, "binder.pdf")
 ```
 
-Run the demonstrations and tests:
+## 10. Running tests
 
 ```bash
-python -m examples.build   # regenerate examples/manifest.{json,yaml}
-python -m examples.demo    # end-to-end walkthrough
-pytest -q                  # 24 tests
+python -m pytest -q
 ```
 
-## Web UI
-
-```bash
-pip install flask fpdf2
-python -m assaytrace.web.app
-```
-
-Open `http://127.0.0.1:8000` for the dashboard. Use **Try Demo** for an instant analysis with bundled fixtures, or upload manifests via **Run Revalidation**.
-
-## Deploying to Render
-
-AssayTrace ships with a [Render Blueprint](render.yaml) for one-click deployment.
-
-### Build command
-
-```bash
-pip install -r requirements.txt
-```
-
-### Start command
-
-```bash
-gunicorn --bind 0.0.0.0:$PORT assaytrace.web.app:app
-```
-
-For local development you can also run:
-
-```bash
-python -m assaytrace.web.app
-```
-
-Render sets the `PORT` environment variable automatically; the built-in dev server reads it when present.
-
-### Environment setup
-
-| Variable | Value | Notes |
-|----------|-------|-------|
-| `PYTHON_VERSION` | `3.12.0` | Set in `render.yaml` |
-| `PORT` | *(auto)* | Injected by Render at runtime |
-
-No database, API keys, or persistent storage are required. The application is stateless: uploads are processed in memory and results are returned to the client.
-
-### Expected URL structure
-
-| Path | Description |
-|------|-------------|
-| `/` | Dashboard — upload manifests, run analysis, or try demo |
-| `/about` | Product overview and capabilities |
-| `/docs` | Platform documentation |
-| `POST /api/analyze` | Run change-control analysis (multipart form upload) |
-| `POST /demo` | Run demo analysis with bundled fixtures |
-| `POST /api/export-pdf` | Export an Audit Binder as PDF |
-
-After deployment, Render provides a URL such as `https://assaytrace.onrender.com`.
-
-## Layout
+## 11. Project structure
 
 ```
 assaytrace/
-├── models/
-│   ├── enums.py       # controlled vocabularies (string enums)
-│   ├── common.py      # Checksum, FileResource, Software/ResourceComponent, GenomeReference
-│   ├── qc.py          # QCThreshold / QCConfiguration (arbitrary metrics, typed)
-│   ├── claims.py      # AssayClaim, PerformanceMetric (+ dependency wiring)
-│   ├── pipeline.py    # Pipeline/Reference/Components/Scope/Environment sections
-│   ├── assay.py       # AssayMetadata
-│   └── manifest.py    # AssayManifest root (+ content hash, traversal)
-├── validators/
-│   └── integrity.py   # cross-model referential-integrity rules
-├── io/
-│   └── loader.py      # JSON/YAML load, dump, canonical serialization
-examples/              # build.py, demo.py, manifest.json, manifest.yaml
-tests/                 # pytest suite
+  diff/           manifest change detection
+  impact/         change impact classification
+  claims_impact/  change -> validated-claim mapping (incl. QC parameter rules)
+  severity/       severity & version-magnitude scoring
+  decision/       revalidation decision engine
+  policy/         SOP policy engine, loader, comparison
+  approval/       deviation approval workflow
+  regression/     benchmark regression detector + regression gate
+  reporting/      audit binder, PDF export, shared presentation layer
+  ingestion/      extensible manifest-ingestion adapter framework
+  portfolio.py    multi-assay portfolio summaries
+  web/            Flask app + single-page UI
+examples/         manifest builders + benchmark fixtures
+tests/            full deterministic test suite
 ```
 
-## Key design decisions
+## 12. Regulatory positioning
 
-- **Uniform component shape.** Everything versioned (`SoftwareComponent`,
-  `ResourceComponent`, `GenomeReference`) exposes a stable `identity`
-  (`category:slug`). The change engine walks manifests generically instead of
-  field-by-field.
-- **Structured claims with explicit dependencies.** Claims declare
-  `depends_on_categories` and `depends_on_components`; this is the seam the
-  impact graph traverses. Referential integrity is enforced at load time.
-- **Envelope vs. content.** Document metadata (`manifest_id`, `generated_at`,
-  `status`, …) is excluded from `content_hash()`, so identical configurations
-  hash identically regardless of when they were generated.
-- **Immutability + strictness.** All models are `frozen` with `extra="forbid"`:
-  a manifest is a tamper-resistant record, and unknown fields are rejected.
-- **Extensible QC without schema churn.** QC is a list of typed `QCThreshold`s,
-  so new metrics need no model changes.
-- **Aggregated, explicit validation.** Cross-model rules (claim/component
-  coherence, somatic-VAF requirement) raise one combined error listing every
-  problem.
+AssayTrace supports a laboratory's existing change-control and revalidation SOPs.
+It is a documentation and governance tool.
+
+**AssayTrace does NOT:**
+
+- run sequencing pipelines or execute workflows
+- call variants
+- interpret or reclassify variants
+- make clinical decisions or issue diagnostic results
+
+It **does** provide deterministic, rule-driven, auditable change-control and
+revalidation **governance**: manifest diffing, claim-impact mapping, policy-driven
+decisions, approval workflow, regression gating, and audit binders. The laboratory
+remains responsible for its SOPs, its validation, and its clinical determinations.
+
+## 13. Competitive positioning
+
+The point below is not that other tools are bad — they are excellent at what
+they do. It is that **none of them occupy AssayTrace's category**: deterministic,
+SOP-driven change-control and revalidation governance for clinical NGS assays.
+
+| Capability                        | Excel   | Jira    | Benchling | Illumina BaseSpace | AssayTrace |
+| --------------------------------- | ------- | ------- | --------- | ------------------ | ---------- |
+| Change tracking                   | Partial | Partial | Partial   | Partial            | Yes        |
+| Claim impact mapping              | No      | No      | No        | No                 | Yes        |
+| SOP-driven revalidation decisions | No      | No      | No        | No                 | Yes        |
+| Approval workflow                 | Manual  | Generic | Partial   | Partial            | Yes        |
+| Regression gating                 | No      | No      | No        | Partial            | Yes        |
+| Audit binder generation           | No      | No      | No        | No                 | Yes        |
+| Clinical NGS change governance    | No      | No      | No        | No                 | Yes        |
+
+AssayTrace is **not** a LIMS, an ELN, a pipeline orchestrator, or a variant
+interpretation platform. It occupies a dedicated **governance layer between assay
+change management and regulatory revalidation documentation** — the step that
+today is handled manually and is hardest to defend in an audit. It complements
+these systems rather than replacing them: a laboratory can keep its LIMS, ELN,
+and pipeline tooling and use AssayTrace to make the revalidation decision
+deterministic, traceable, and audit-ready.
+
+## 14. Roadmap
+
+- Manifest ingestion connectors (Nextflow, nf-core, DRAGEN, Docker, Git, CWL,
+  WDL) on top of the existing adapter framework.
+- Persistent portfolio storage and per-assay drill-through.
+- Policy comparison extended to severity-floor and claim-mapping deltas.
+- Optional decision-step severity floor (CRITICAL forcing full revalidation).
+- Multi-user authentication and role-based approval routing.
+
+## 15. License
+
+Proprietary -- (c) Esra Zengin. Contact for pilot and evaluation terms.
+
+## 16. Contact
+
+- **Email:** esra.zengiinn@gmail.com
+- **LinkedIn:** https://www.linkedin.com/in/esra-zengin-
+- **GitHub:** https://github.com/esrazngin
+
+For pilot discussions, feedback, or evaluation access, please reach out.
