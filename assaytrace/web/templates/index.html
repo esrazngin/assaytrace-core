@@ -434,6 +434,32 @@
 
   table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;margin-top:6px}
   th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.change-summary{
+    table-layout:fixed;
+    width:100%;
+}
+
+table.change-summary th,
+table.change-summary td{
+    overflow-wrap:anywhere;
+    word-break:break-word;
+}
+
+.cv-json{
+    margin:0;
+    font-family:var(--mono);
+    font-size:11.5px;
+    line-height:1.5;
+    color:#cbd5e1;
+    white-space:pre-wrap;
+    word-break:break-word;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:8px 10px;
+    max-width:280px;
+    overflow-x:auto;
+}
   th{color:var(--muted);font-weight:600;text-transform:uppercase;font-size:10.5px;letter-spacing:.1em}
   .pill{font-family:var(--sans);font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
   .p-analytical{background:rgba(6,182,212,.18);color:var(--cyan)}
@@ -1160,6 +1186,24 @@ function downloadJSON(key){
 
 const pill=(cls,txt)=>`<span class="pill p-${cls}">${txt}</span>`;
 const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function fmtValue(v){
+  if(v===null||v===undefined||v==="") return '<span class="muted">—</span>';
+
+  if(typeof v==="object"){
+    let json;
+
+    try{
+      json=JSON.stringify(v,null,2);
+    }
+    catch(e){
+      json=String(v);
+    }
+
+    return `<pre class="cv-json">${esc(json)}</pre>`;
+  }
+
+  return esc(v);
+}
 const REVAL_LABELS={
   no_revalidation_required:"No revalidation required", documentation_update:"Documentation update",
   infrastructure_verification:"Infrastructure verification", qc_verification:"QC verification",
@@ -1218,7 +1262,7 @@ function renderAudit(data){
   const sevCell=cid=>{const s=sm[cid]; if(!s) return "—";
     const mag=(s.version_magnitude&&s.version_magnitude!=="none")?` <span class="muted">(${s.version_magnitude})</span>`:"";
     return pill(s.severity,s.severity.toUpperCase())+mag;};
-  const changeRows=b.changes.map(c=>`<tr><td>${esc(c.change_type)}</td><td>${esc(c.component_identity)}</td><td>${sevCell(c.change_id)}</td><td>${esc(c.old_value)}</td><td>${esc(c.new_value)}</td></tr>`).join("");
+  const changeRows=b.changes.map(c=>`<tr><td>${esc(c.change_type)}</td><td>${esc(c.component_identity)}</td><td>${sevCell(c.change_id)}</td><td>${fmtValue(c.old_value)}</td><td>${fmtValue(c.new_value)}</td></tr>`).join("");
   const impactRows=b.impacts.map(i=>`<tr><td>${esc(i.change_id)}</td><td>${pill(i.impact_domain,i.impact_domain)}</td><td>${esc(i.rationale)}</td></tr>`).join("");
 
   const chain=v.decisions.map(chainCardHtml).join("");
@@ -1235,7 +1279,7 @@ function renderAudit(data){
     <div class="chain">${v.decisions.length?chain:'<div class="empty">No revalidation decisions (no changes detected).</div>'}</div>
     ${orphan}
     <h2 class="sec">Change Summary</h2>
-    <div class="panel">${b.changes.length?`<table><tr><th>Type</th><th>Identity</th><th>Severity</th><th>Old</th><th>New</th></tr>${changeRows}</table>`:'<div class="empty">No changes detected.</div>'}</div>
+    <div class="panel">${b.changes.length?`<table class="change-summary"><tr><th>Type</th><th>Identity</th><th>Severity</th><th>Old</th><th>New</th></tr>${changeRows}</table>`:'<div class="empty">No changes detected.</div>'}</div>
     <h2 class="sec">Impact Analysis</h2>
     <div class="panel">${b.impacts.length?`<table><tr><th>Change</th><th>Domain</th><th>Rationale</th></tr>${impactRows}</table>`:'<div class="empty">No impacts.</div>'}</div>`;
 }
